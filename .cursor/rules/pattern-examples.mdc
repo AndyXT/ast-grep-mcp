@@ -1,5 +1,62 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+# Pattern Examples for Supported Languages
+
+Pattern examples for Python and JavaScript can be found in [README.md](mdc:README.md) under the "Pattern Examples" section.
+
+These examples show how to match function definitions, class definitions, print statements, function calls, and more for each language.
+
+# AST-Grep Pattern Examples
+
+AST-grep uses a powerful pattern matching syntax to search and transform code.
+
+## Python Patterns
+
+```python
+# Match function definitions
+def $NAME($$$PARAMS)
+
+# Match class definitions
+class $NAME($$$BASES)
+
+# Match function calls
+$FUNC($$$ARGS)
+
+# Match specific imports
+import $MODULE
+from $MODULE import $NAME
+
+# Match print statements
+print($$$ARGS)
+```
+
+## JavaScript/TypeScript Patterns
+
+```javascript
+# Match function declarations
+function $NAME($$$PARAMS) { $$$BODY }
+
+# Match arrow functions
+($$$PARAMS) => $$$BODY
+
+# Match class definitions
+class $NAME { $$$BODY }
+
+# Match React components
+<$COMPONENT $$$PROPS>$$$CHILDREN</$COMPONENT>
+
+# Match console.log statements
+console.log($$$ARGS)
+```
+
+## Pattern Syntax Reference
+
+- `$NAME` - Matches a single node (variable, identifier, etc.)
+- `$$$PARAMS` - Matches multiple nodes (zero or more)
+- `$...` - Matches a specific node type
+- `$_` - Wildcard that matches any single node
+
+See [README.md](mdc:README.md) for more pattern examples.

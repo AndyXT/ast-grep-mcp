@@ -22,15 +22,36 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+        components: rustfmt, clippy
+    
     - name: Install UV
       run: |
         pip install uv
+    
+    - name: Check Rust version
+      run: |
+        rustc --version
+        cargo --version
     
     - name: Create virtual environment and install dependencies
       run: |
         uv venv
         source .venv/bin/activate
+        # Clear any potential caches
+        rm -rf ~/.cache/pip ~/.cache/uv
+        # Install ast-grep-py separately first to ensure it builds correctly
+        uv pip install ast-grep-py==0.37.0 --verbose
+        # Then install all other dependencies
         uv sync --dev
+    
+    - name: Verify ast-grep-py installation
+      run: |
+        source .venv/bin/activate
+        python -c "from ast_grep_py import SgRoot; print('Successfully imported SgRoot')"
     
     - name: Run linter
       run: |
@@ -40,7 +61,7 @@ jobs:
     - name: Run tests with pytest
       run: |
         source .venv/bin/activate
-        pytest -q --cov=src.ast_grep_mcp --cov-report=xml
+        pytest -v --cov=src.ast_grep_mcp --cov-report=xml
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4

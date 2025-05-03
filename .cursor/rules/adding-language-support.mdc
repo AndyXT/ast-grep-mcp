@@ -5,8 +5,48 @@ alwaysApply: false
 ---
 # Adding Support for New Languages
 
-To add a new language:
+To add a new language to ast-grep-mcp:
+
 1. Create a new handler module in [src/ast_grep_mcp/language_handlers/](mdc:src/ast_grep_mcp/language_handlers).
-2. Register the handler in [src/ast_grep_mcp/language_handlers/__init__.py](mdc:src/ast_grep_mcp/language_handlers/__init__.py).
+
+2. Implement the `LanguageHandler` abstract base class:
+   ```python
+   from .base import LanguageHandler
+   
+   class NewLanguageHandler(LanguageHandler):
+       @property
+       def language_name(self) -> str:
+           return "new_language"  # e.g., "rust"
+           
+       @property
+       def file_extensions(self) -> List[str]:
+           return [".ext"]  # e.g., [".rs"]
+           
+       def get_default_patterns(self) -> Dict[str, str]:
+           return {
+               "function": "fn $NAME($$$PARAMS)",
+               "struct": "struct $NAME { $$$FIELDS }",
+               # Add more common patterns
+           }
+   ```
+
+3. Register the handler in [src/ast_grep_mcp/language_handlers/__init__.py](mdc:src/ast_grep_mcp/language_handlers/__init__.py):
+   ```python
+   from .new_language_handler import NewLanguageHandler
+   
+   # Register all language handlers
+   handlers = {
+       handler.language_name: handler()
+       for handler in [
+           PythonHandler, 
+           JavaScriptHandler,
+           NewLanguageHandler  # Add your new handler here
+       ]
+   }
+   ```
+
+4. Ensure ast-grep supports the language (check with `sgpt list-languages`).
+
+5. Add tests for the new language handler in the test suite.
 
 See [README.md](mdc:README.md) for more details.

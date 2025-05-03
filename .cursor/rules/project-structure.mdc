@@ -5,19 +5,50 @@ alwaysApply: false
 ---
 # Project Structure Guide
 
-The main entry point is [main.py](mdc:main.py), which starts the MCP server and handles CLI commands.
+The ast-grep-mcp project is organized as follows:
 
-Core logic is in [src/ast_grep_mcp/](mdc:src/ast_grep_mcp):
+## Main Files
+
+- [main.py](mdc:main.py): Entry point for CLI commands and server startup
+- [pyproject.toml](mdc:pyproject.toml): Project configuration, dependencies
+
+## Core Package
+
+The core functionality is in [src/ast_grep_mcp/](mdc:src/ast_grep_mcp):
+
 - [ast_analyzer.py](mdc:src/ast_grep_mcp/ast_analyzer.py): Core AST analysis functionality
-- [server.py](mdc:src/ast_grep_mcp/server.py): MCP server implementation
-- [language_handlers/](mdc:src/ast_grep_mcp/language_handlers): Language-specific modules
+- [server.py](mdc:src/ast_grep_mcp/server.py): MCP server implementation with tool definitions
 
-Language handlers are in [src/ast_grep_mcp/language_handlers/](mdc:src/ast_grep_mcp/language_handlers):
-- [python_handler.py](mdc:src/ast_grep_mcp/language_handlers/python_handler.py): Python support
+## Core Module
+
+The [src/ast_grep_mcp/core/](mdc:src/ast_grep_mcp/core) directory contains:
+
+- [__init__.py](mdc:src/ast_grep_mcp/core/__init__.py): AstGrepMCP class implementation
+- [config.py](mdc:src/ast_grep_mcp/core/config.py): ServerConfig dataclass definition
+
+## Language Handlers
+
+Language-specific modules in [src/ast_grep_mcp/language_handlers/](mdc:src/ast_grep_mcp/language_handlers):
+
+- [__init__.py](mdc:src/ast_grep_mcp/language_handlers/__init__.py): Handler registration
+- [base.py](mdc:src/ast_grep_mcp/language_handlers/base.py): Abstract base class for handlers
+- [python_handler.py](mdc:src/ast_grep_mcp/language_handlers/python_handler.py): Python language support
 - [javascript_handler.py](mdc:src/ast_grep_mcp/language_handlers/javascript_handler.py): JavaScript support
-- [base.py](mdc:src/ast_grep_mcp/language_handlers/base.py): Base handler class
-- [__init__.py](mdc:src/ast_grep_mcp/language_handlers/__init__.py): Registers handlers
 
-Project configuration is in [pyproject.toml](mdc:pyproject.toml).
+## Utils
 
-See [README.md](mdc:README.md) for usage, development, and more details.
+Utility functions in [src/ast_grep_mcp/utils/](mdc:src/ast_grep_mcp/utils):
+
+- Error handling decorators and helper functions
+
+## Tests
+
+Unit and integration tests in [tests/](mdc:tests) directory:
+
+- Test coverage is maintained at >90%
+- Tests for each component and language handler
+
+## Documentation
+
+- [README.md](mdc:README.md): Overview, usage, and examples
+- [docs/implementation-plan.md](mdc:docs/implementation-plan.md): Development roadmap
