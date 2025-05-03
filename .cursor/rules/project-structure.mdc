@@ -1,0 +1,23 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Project Structure Guide
+
+The main entry point is [main.py](mdc:main.py), which starts the MCP server and handles CLI commands.
+
+Core logic is in [src/ast_grep_mcp/](mdc:src/ast_grep_mcp):
+- [ast_analyzer.py](mdc:src/ast_grep_mcp/ast_analyzer.py): Core AST analysis functionality
+- [server.py](mdc:src/ast_grep_mcp/server.py): MCP server implementation
+- [language_handlers/](mdc:src/ast_grep_mcp/language_handlers): Language-specific modules
+
+Language handlers are in [src/ast_grep_mcp/language_handlers/](mdc:src/ast_grep_mcp/language_handlers):
+- [python_handler.py](mdc:src/ast_grep_mcp/language_handlers/python_handler.py): Python support
+- [javascript_handler.py](mdc:src/ast_grep_mcp/language_handlers/javascript_handler.py): JavaScript support
+- [base.py](mdc:src/ast_grep_mcp/language_handlers/base.py): Base handler class
+- [__init__.py](mdc:src/ast_grep_mcp/language_handlers/__init__.py): Registers handlers
+
+Project configuration is in [pyproject.toml](mdc:pyproject.toml).
+
+See [README.md](mdc:README.md) for usage, development, and more details.

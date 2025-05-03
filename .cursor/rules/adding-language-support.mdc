@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Adding Support for New Languages
+
+To add a new language:
+1. Create a new handler module in [src/ast_grep_mcp/language_handlers/](mdc:src/ast_grep_mcp/language_handlers).
+2. Register the handler in [src/ast_grep_mcp/language_handlers/__init__.py](mdc:src/ast_grep_mcp/language_handlers/__init__.py).
+
+See [README.md](mdc:README.md) for more details.
