@@ -7,6 +7,9 @@ from typing import Dict, Any, Optional
 import logging
 import os
 import sys
+import json
+import yaml
+from pathlib import Path
 
 
 # Logging level mapping from string to int
@@ -118,6 +121,40 @@ class ServerConfig:
             config_dict["safe_roots"] = os.environ["AST_GREP_SAFE_ROOTS"].split(",")
         
         return cls(**config_dict)
+    
+    @classmethod
+    def from_file(cls, config_file: str) -> "ServerConfig":
+        """
+        Create a ServerConfig from a configuration file.
+        
+        Args:
+            config_file: Path to the configuration file (JSON or YAML)
+            
+        Returns:
+            A ServerConfig instance.
+            
+        Raises:
+            FileNotFoundError: If the configuration file doesn't exist.
+            ValueError: If the configuration file format is not supported or invalid.
+        """
+        config_path = Path(config_file)
+        
+        if not config_path.exists():
+            raise FileNotFoundError(f"Configuration file not found: {config_file}")
+        
+        try:
+            if config_path.suffix.lower() in ('.yml', '.yaml'):
+                with open(config_path, 'r') as f:
+                    config_dict = yaml.safe_load(f)
+            elif config_path.suffix.lower() == '.json':
+                with open(config_path, 'r') as f:
+                    config_dict = json.load(f)
+            else:
+                raise ValueError(f"Unsupported configuration file format: {config_path.suffix}")
+            
+            return cls.from_dict(config_dict)
+        except (json.JSONDecodeError, yaml.YAMLError) as e:
+            raise ValueError(f"Invalid configuration file format: {str(e)}")
     
     def setup_logging(self, name: str = "ast_grep_mcp") -> logging.Logger:
         """

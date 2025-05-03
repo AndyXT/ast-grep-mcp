@@ -11,6 +11,21 @@ import tempfile
 import json
 import os
 
+# Define a version constant
+VERSION = "0.2.0"
+
+# Try to get version from package metadata if possible
+try:
+    import pkg_resources
+    try:
+        VERSION = pkg_resources.get_distribution("ast_grep_mcp").version
+    except pkg_resources.DistributionNotFound:
+        # Keep using the default version if the package is not installed
+        pass
+except ImportError:
+    # Keep using the default version if pkg_resources is not available
+    pass
+
 console = Console()
 app = typer.Typer(help="AST Grep MCP server CLI")
 
@@ -22,6 +37,14 @@ def validate_log_level(log_level: str) -> int:
         log_level_options = ", ".join(LOG_LEVELS.keys())
         raise typer.BadParameter(f"Invalid log level: {log_level}. Valid options are: {log_level_options}")
 
+def load_config(config_file: str) -> ServerConfig:
+    """Load configuration from a file."""
+    try:
+        return ServerConfig.from_file(config_file)
+    except (FileNotFoundError, ValueError) as e:
+        console.print(f"[bold red]Error loading configuration:[/bold red] {str(e)}")
+        raise typer.Exit(code=1)
+
 @app.command()
 def start(
     host: str = typer.Option("localhost", "--host", "-h", help="Host to bind to"),
@@ -32,6 +55,7 @@ def start(
     log_to_console: bool = typer.Option(True, "--log-to-console", "-c", 
                                       help="Whether to log to console"),
     cache_size: int = typer.Option(128, "--cache-size", help="Size of the result cache"),
+    config_file: str = typer.Option(None, "--config", help="Path to configuration file (JSON or YAML)"),
 ):
     """
     Start the AST Grep MCP server.
@@ -39,23 +63,41 @@ def start(
     The server will listen for MCP requests and process ast-grep commands.
     """
     try:
-        # Convert log_level string to integer
-        log_level_int = validate_log_level(log_level)
-        
-        # Create a server configuration
-        config = ServerConfig(
-            host=host, 
-            port=port,
-            log_level=log_level_int,
-            log_file=log_file,
-            log_to_console=log_to_console,
-            cache_size=cache_size
-        )
+        if config_file:
+            # Load configuration from file
+            config = load_config(config_file)
+            
+            # Override config with command line options if provided
+            if host != "localhost":
+                config.host = host
+            if port != 8080:
+                config.port = port
+            if log_level != "info":
+                config.log_level = validate_log_level(log_level)
+            if log_file is not None:
+                config.log_file = log_file
+            if not log_to_console:
+                config.log_to_console = False
+            if cache_size != 128:
+                config.cache_size = cache_size
+        else:
+            # Convert log_level string to integer
+            log_level_int = validate_log_level(log_level)
+            
+            # Create a server configuration
+            config = ServerConfig(
+                host=host, 
+                port=port,
+                log_level=log_level_int,
+                log_file=log_file,
+                log_to_console=log_to_console,
+                cache_size=cache_size
+            )
         
         # Set up logging
         logger = config.setup_logging("ast_grep_mcp.main")
         logger.info(f"Starting AST Grep MCP server on {host}:{port}")
-        logger.info(f"Cache size set to {cache_size}")
+        logger.info(f"Cache size set to {config.cache_size}")
         
         # Create and start the server
         server = AstGrepMCP(config)
@@ -76,18 +118,169 @@ def serve(
     log_to_console: bool = typer.Option(True, "--log-to-console", "-c", 
                                       help="Whether to log to console"),
     cache_size: int = typer.Option(128, "--cache-size", help="Size of the result cache"),
+    config_file: str = typer.Option(None, "--config", help="Path to configuration file (JSON or YAML)"),
 ):
     """
     Start the AST Grep MCP server (alias for 'start').
     """
-    return start(host, port, log_level, log_file, log_to_console, cache_size)
+    return start(host, port, log_level, log_file, log_to_console, cache_size, config_file)
 
 @app.command()
 def version():
     """
     Show the current version of the AST Grep MCP server.
     """
-    console.print("[bold green]AST Grep MCP Server v0.1.0[/bold green]")
+    console.print(f"[bold green]AST Grep MCP Server v{VERSION}[/bold green]")
+    
+    # Show additional configuration info
+    console.print("\n[bold blue]Configuration:[/bold blue]")
+    console.print("- Default host: localhost")
+    console.print("- Default port: 8080")
+    console.print("- Default cache size: 128")
+    console.print("- Default log level: INFO")
+
+@app.command()
+def interactive():
+    """
+    Start an interactive AST Grep session.
+    
+    This mode allows you to test patterns and explore AST Grep functionality
+    without starting a full server.
+    """
+    from src.ast_grep_mcp.ast_analyzer import AstAnalyzer
+    from src.ast_grep_mcp.language_handlers import get_handler
+    import readline
+    
+    console.print("[bold green]AST Grep Interactive Mode[/bold green]")
+    console.print("Type 'help' for available commands, 'exit' to quit")
+    
+    analyzer = AstAnalyzer()
+    current_language = "python"
+    current_code = ""
+    
+    def get_pattern_help():
+        handler = get_handler(current_language)
+        if not handler:
+            return "No pattern examples available for this language"
+        
+        patterns = handler.get_default_patterns()
+        result = f"[bold]Pattern examples for {current_language}:[/bold]\n"
+        for name, pattern in patterns.items():
+            result += f"- {name}: {pattern}\n"
+        return result
+    
+    commands = {
+        "help": "Show this help message",
+        "exit": "Exit interactive mode",
+        "languages": "List supported languages",
+        "language <name>": "Set current language",
+        "patterns": "Show example patterns for current language",
+        "code <file_path>": "Load code from file",
+        "analyze <pattern>": "Analyze current code with pattern",
+        "refactor <pattern> <replacement>": "Refactor code with pattern and replacement",
+    }
+    
+    while True:
+        try:
+            user_input = input(f"{current_language}> ").strip()
+            
+            if not user_input:
+                continue
+            
+            if user_input.lower() == "exit":
+                break
+            
+            if user_input.lower() == "help":
+                console.print("[bold]Available commands:[/bold]")
+                for cmd, desc in commands.items():
+                    console.print(f"- {cmd}: {desc}")
+                continue
+            
+            if user_input.lower() == "languages":
+                langs = analyzer.get_supported_languages()
+                console.print("[bold]Supported languages:[/bold]")
+                for lang, exts in langs.items():
+                    console.print(f"- {lang}: {', '.join(exts)}")
+                continue
+            
+            if user_input.lower().startswith("language "):
+                lang = user_input[9:].strip()
+                if lang in analyzer.get_supported_languages():
+                    current_language = lang
+                    console.print(f"Language set to [bold]{lang}[/bold]")
+                else:
+                    console.print(f"[bold red]Unsupported language:[/bold red] {lang}")
+                continue
+            
+            if user_input.lower() == "patterns":
+                console.print(get_pattern_help())
+                continue
+            
+            if user_input.lower().startswith("code "):
+                file_path = user_input[5:].strip()
+                try:
+                    with open(file_path, "r") as f:
+                        current_code = f.read()
+                    console.print(f"Loaded code from [bold]{file_path}[/bold]")
+                    console.print(f"Code length: {len(current_code)} characters")
+                except Exception as e:
+                    console.print(f"[bold red]Error loading file:[/bold red] {str(e)}")
+                continue
+            
+            if user_input.lower().startswith("analyze "):
+                if not current_code:
+                    console.print("[bold yellow]No code loaded. Use 'code <file_path>' to load code.[/bold yellow]")
+                    continue
+                
+                pattern = user_input[8:].strip()
+                try:
+                    result = analyzer.analyze_code(current_code, current_language, pattern)
+                    if "error" in result:
+                        console.print(f"[bold red]Error:[/bold red] {result['error']}")
+                    else:
+                        console.print(f"[bold green]Found {len(result['matches'])} matches[/bold green]")
+                        for i, match in enumerate(result['matches']):
+                            console.print(f"Match {i+1}:")
+                            console.print(f"  Line: {match['range']['start']['line']} - {match['range']['end']['line']}")
+                            console.print(f"  Text: {match['text']}")
+                except Exception as e:
+                    console.print(f"[bold red]Error analyzing code:[/bold red] {str(e)}")
+                continue
+            
+            if user_input.lower().startswith("refactor "):
+                if not current_code:
+                    console.print("[bold yellow]No code loaded. Use 'code <file_path>' to load code.[/bold yellow]")
+                    continue
+                
+                parts = user_input[9:].strip().split(" ", 1)
+                if len(parts) != 2:
+                    console.print("[bold yellow]Usage: refactor <pattern> <replacement>[/bold yellow]")
+                    continue
+                
+                pattern, replacement = parts
+                try:
+                    result = analyzer.refactor_code(current_code, current_language, pattern, replacement)
+                    if "error" in result:
+                        console.print(f"[bold red]Error:[/bold red] {result['error']}")
+                    else:
+                        console.print(f"[bold green]Refactored {result['stats']['matches']} matches[/bold green]")
+                        console.print("New code:")
+                        console.print(result['refactored_code'][:200] + "..." if len(result['refactored_code']) > 200 else result['refactored_code'])
+                except Exception as e:
+                    console.print(f"[bold red]Error refactoring code:[/bold red] {str(e)}")
+                continue
+            
+            console.print(f"[bold yellow]Unknown command:[/bold yellow] {user_input}")
+            console.print("Type 'help' for available commands")
+            
+        except KeyboardInterrupt:
+            break
+        except EOFError:
+            break
+        except Exception as e:
+            console.print(f"[bold red]Error:[/bold red] {str(e)}")
+    
+    console.print("[bold green]Exiting interactive mode[/bold green]")
 
 @app.command()
 def benchmark(

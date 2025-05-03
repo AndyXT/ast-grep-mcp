@@ -56,13 +56,53 @@ pip install -e .
 Start the server with default settings:
 
 ```bash
+python main.py start
+```
+
+Or use the legacy command:
+
+```bash
 python main.py serve
 ```
 
 Customize host, port and cache size:
 
 ```bash
-python main.py serve --host 0.0.0.0 --port 9000 --cache-size 256
+python main.py start --host 0.0.0.0 --port 9000 --cache-size 256
+```
+
+Configure logging:
+
+```bash
+python main.py start --log-level debug --log-file ast-grep.log
+```
+
+Use a configuration file (JSON or YAML):
+
+```bash
+python main.py start --config config.json
+```
+
+### Interactive Mode
+
+Test patterns and explore AST Grep functionality without starting a server:
+
+```bash
+python main.py interactive
+```
+
+In interactive mode, you can:
+- List supported languages
+- Change the current language
+- Load code from a file
+- Analyze code with patterns
+- Refactor code with patterns and replacements
+- View example patterns for the current language
+
+### View Version Information
+
+```bash
+python main.py version
 ```
 
 ### Performance Optimization
@@ -96,13 +136,42 @@ To configure an AI assistant to use this MCP server, use the following configura
       "command": "uv",
       "args": [
         "--directory", "/path/to/ast-grep-mcp",
-        "run", "python", "main.py", "server",
+        "run", "python", "main.py", "start",
         "--cache-size", "128"
       ],
       "env": {}
     }
   }
 }
+```
+
+### Configuration File Example
+
+Create a JSON configuration file:
+
+```json
+{
+  "host": "0.0.0.0",
+  "port": 9000,
+  "log_level": "info",
+  "log_file": "ast-grep.log",
+  "log_to_console": true,
+  "cache_size": 256,
+  "safe_roots": ["/path/to/safe/dir"]
+}
+```
+
+Or use YAML format:
+
+```yaml
+host: 0.0.0.0
+port: 9000
+log_level: info
+log_file: ast-grep.log
+log_to_console: true
+cache_size: 256
+safe_roots:
+  - /path/to/safe/dir
 ```
 
 ### Available MCP Tools
