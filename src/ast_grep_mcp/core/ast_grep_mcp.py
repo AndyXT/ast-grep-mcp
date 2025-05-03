@@ -37,17 +37,7 @@ class AstGrepMCP:
     
     def _setup_logger(self) -> logging.Logger:
         """Set up the logger for the MCP server."""
-        logger = logging.getLogger("ast_grep_mcp")
-        logger.setLevel(self.config.log_level)
-        
-        # Create a handler if none exists
-        if not logger.handlers:
-            handler = logging.StreamHandler()
-            formatter = logging.Formatter(self.config.log_format)
-            handler.setFormatter(formatter)
-            logger.addHandler(handler)
-        
-        return logger
+        return self.config.setup_logging("ast_grep_mcp")
     
     def _register_tools(self) -> None:
         """Register all available tools with the MCP server."""

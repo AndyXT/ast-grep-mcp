@@ -61,11 +61,18 @@ Current test coverage: 95% (increased from 93%)
 
 ---
 
-## Phase 3 – Logging (🕐 <1 day)
-1. 🛠️  Add `logging` configuration in `config.py` (levels: DEBUG/INFO/WARNING/ERROR).  
-   • Replace `print` calls with `logger`.
-2. ✅  Capture logs via `caplog` in tests.
-3. 🔖 Log lines appear with selected log level.
+## Phase 3 – Logging (✅ COMPLETED)
+1. ✅ **Enhanced logging configuration in `config.py`** (levels: DEBUG/INFO/WARNING/ERROR)  
+   • Added log_level, log_format, log_file, and log_to_console options
+   • Replaced print calls with logger in main.py
+   • Used ServerConfig.setup_logging for consistent logger initialization
+2. ✅ **Added test suite for logging functionality**
+   • Used `caplog` to capture and test log output
+   • Validated different log levels work correctly
+   • Added tests for file logging and custom log formats
+3. ✅ Log lines appear with selected log level.
+
+Current test coverage: 95% (maintained from previous phase)
 
 ---
 
