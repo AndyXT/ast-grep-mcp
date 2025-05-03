@@ -4,6 +4,7 @@ import json
 import tempfile
 from pathlib import Path
 import sys
+import re
 
 # Add the root directory to sys.path to allow importing main
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -11,7 +12,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from main import app
 from src.ast_grep_mcp.core import ServerConfig
 
+# Create a CLI runner with colors disabled
 runner = CliRunner()
+
+# Helper function to strip ANSI escape sequences from strings
+def strip_ansi(text):
+    """Strip ANSI escape sequences from text"""
+    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+    return ansi_escape.sub('', text)
 
 def test_version_command():
     """Test the version command."""
@@ -40,16 +48,17 @@ def test_help_command():
 def test_start_help_command():
     """Test the help output for the start command."""
     result = runner.invoke(app, ["start", "--help"])
+    clean_output = strip_ansi(result.stdout)
     
     assert result.exit_code == 0
-    assert "Start the AST Grep MCP server" in result.stdout
-    assert "--host" in result.stdout
-    assert "--port" in result.stdout
-    assert "--log-level" in result.stdout
-    assert "--log-file" in result.stdout
-    assert "--log-to-console" in result.stdout
-    assert "--cache-size" in result.stdout
-    assert "--config" in result.stdout
+    assert "Start the AST Grep MCP server" in clean_output
+    assert "--host" in clean_output
+    assert "--port" in clean_output
+    assert "--log-level" in clean_output
+    assert "--log-file" in clean_output
+    assert "--log-to-console" in clean_output
+    assert "--cache-size" in clean_output
+    assert "--config" in clean_output
 
 def test_configuration_file_json():
     """Test loading configuration from a JSON file."""
