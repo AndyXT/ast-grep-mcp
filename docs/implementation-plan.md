@@ -85,19 +85,19 @@ Current test coverage: 95% (maintained from previous phase)
 
 ---
 
-## Phase 5 – CLI Enhancement (🕐 1 day)
-1. 🛠️  Replace `typer` CLI with argument-rich interface (keep Typer but expand).  
+## Phase 5 – CLI Enhancement (✅ COMPLETED)
+1. ✅ Replace `typer` CLI with argument-rich interface (keep Typer but expand).  
    • Add `start`, `interactive`, `version` commands.  
    • Flags: `--log-level`, `--config`.
 2. ✅ `pytest` tests call `typer.CliRunner().invoke()`.
-3. 🔖 `python main.py --help` shows new commands with descriptions.
+3. ✅ `python main.py --help` shows new commands with descriptions.
 
 ---
 
-## Phase 6 – Documentation (🕐 concurrent)
-1. 🛠️  Expand `README.md` usage section with CLI examples, tool list.  
-2. 🛠️  Create `/docs/` with architecture diagram & demo GIF.  
-3. 🔖 Docs review checklist completed.
+## Phase 6 – Documentation (✅ COMPLETED)
+1. ✅ Expand `README.md` usage section with CLI examples, tool list.  
+2. ✅ Create `/docs/` with architecture diagram & detailed guides.  
+3. ✅ Docs review checklist completed.
 
 ---
 
@@ -111,7 +111,7 @@ Current test coverage: 95% (maintained from previous phase)
 
 ## Phase 8 – Extended Language Support (🕐 ongoing)
 1. 🛠️  Template handler generator script (`uv run python scripts/new_language.py rust`).  
-2. 🛠️  Add at least **Go** & **Rust** handlers.
+2. 🛠️  Add at least **C**, **Go** & **Rust** handlers.
 3. ✅  Unit tests for default patterns returned by each handler.
 
 ---
