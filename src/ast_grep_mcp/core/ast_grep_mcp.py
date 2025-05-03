@@ -37,11 +37,11 @@ class AstGrepMCP:
         # Set cache size from config if available
         if hasattr(self.config, 'cache_size') and self.config.cache_size is not None:
             result_cache.maxsize = self.config.cache_size
-            self.logger.info(f"Setting result cache size to {result_cache.maxsize}")
+            self.logger.info("Setting result cache size to " + str(result_cache.maxsize))
         
         # Log security configuration
         if self.config.safe_roots:
-            self.logger.info(f"File access restricted to: {', '.join(self.config.safe_roots)}")
+            self.logger.info("File access restricted to: " + ', '.join(self.config.safe_roots))
         else:
             self.logger.warning("No safe roots configured. File access is unrestricted.")
         
@@ -80,20 +80,20 @@ class AstGrepMCP:
             Dictionary with pattern matches and their locations
         """
         if language not in self.analyzer.supported_languages:
-            self.logger.warning(f"Unsupported language: {language}")
-            return {"error": f"Language '{language}' is not supported", "matches": []}
+            self.logger.warning("Unsupported language: " + language)
+            return {"error": "Language '" + language + "' is not supported", "matches": []}
         
         # Sanitize pattern to prevent command injection
         safe_pattern = sanitize_pattern(pattern)
         if safe_pattern != pattern:
-            self.logger.warning(f"Pattern was sanitized for security reasons")
+            self.logger.warning("Pattern was sanitized for security reasons")
         
-        self.logger.debug(f"Analyzing code with pattern: {safe_pattern}")
+        self.logger.debug("Analyzing code with pattern: " + safe_pattern)
         start_time = time.time()
         matches = self.analyzer.find_patterns(code, language, safe_pattern)
         elapsed = time.time() - start_time
         
-        self.logger.debug(f"Found {len(matches)} matches in {elapsed:.4f}s")
+        self.logger.debug("Found " + str(len(matches)) + " matches in " + str(elapsed) + "s")
         
         return {
             "matches": matches,
@@ -117,17 +117,17 @@ class AstGrepMCP:
             Dictionary with refactored code and statistics
         """
         if language not in self.analyzer.supported_languages:
-            self.logger.warning(f"Unsupported language: {language}")
-            return {"error": f"Language '{language}' is not supported", "success": False}
+            self.logger.warning("Unsupported language: " + language)
+            return {"error": "Language '" + language + "' is not supported", "success": False}
         
         # Sanitize pattern and replacement to prevent command injection
         safe_pattern = sanitize_pattern(pattern)
         safe_replacement = sanitize_pattern(replacement)
         
         if safe_pattern != pattern or safe_replacement != replacement:
-            self.logger.warning(f"Pattern or replacement was sanitized for security reasons")
+            self.logger.warning("Pattern or replacement was sanitized for security reasons")
         
-        self.logger.debug(f"Refactoring code with pattern: {safe_pattern}")
+        self.logger.debug("Refactoring code with pattern: " + safe_pattern)
         start_time = time.time()
         original_code = code
         refactored_code = self.analyzer.apply_refactoring(code, language, safe_pattern, safe_replacement)
@@ -136,7 +136,7 @@ class AstGrepMCP:
         # Count matches (by comparing refactored code with original)
         changes_made = original_code != refactored_code
         
-        self.logger.debug(f"Refactoring complete in {elapsed:.4f}s (changes made: {changes_made})")
+        self.logger.debug("Refactoring complete in " + str(elapsed) + "s (changes made: " + str(changes_made) + ")")
         
         return {
             "original_code": original_code,
@@ -164,8 +164,8 @@ class AstGrepMCP:
         
         path = Path(file_path)
         if not path.exists() or not path.is_file():
-            self.logger.warning(f"File not found: {file_path}")
-            return {"error": f"File '{file_path}' does not exist or is not a file", "matches": []}
+            self.logger.warning("File not found: " + file_path)
+            return {"error": "File '" + file_path + "' does not exist or is not a file", "matches": []}
         
         # Determine language from file extension
         extension = path.suffix.lower()
@@ -177,8 +177,8 @@ class AstGrepMCP:
                 break
         
         if not language:
-            self.logger.warning(f"Unsupported file type: {extension}")
-            return {"error": f"Unsupported file type: {extension}", "matches": []}
+            self.logger.warning("Unsupported file type: " + extension)
+            return {"error": "Unsupported file type: " + extension, "matches": []}
         
         try:
             with open(path, "r", encoding="utf-8") as f:
@@ -187,16 +187,16 @@ class AstGrepMCP:
             # Sanitize pattern
             safe_pattern = sanitize_pattern(pattern)
             if safe_pattern != pattern:
-                self.logger.warning(f"Pattern was sanitized for security reasons")
+                self.logger.warning("Pattern was sanitized for security reasons")
             
-            self.logger.debug(f"Analyzing file: {file_path} with pattern: {safe_pattern}")
+            self.logger.debug("Analyzing file: " + file_path + " with pattern: " + safe_pattern)
             start_time = time.time()
             
             # Use the cached analyze_code method
             result = self.analyze_code(code, language, safe_pattern)
             elapsed = time.time() - start_time
             
-            self.logger.debug(f"File analysis complete in {elapsed:.4f}s")
+            self.logger.debug("File analysis complete in " + str(elapsed) + "s")
             
             return {
                 "file": str(path),
@@ -206,7 +206,7 @@ class AstGrepMCP:
             }
         
         except Exception as e:
-            self.logger.error(f"Error analyzing file {file_path}: {str(e)}")
+            self.logger.error("Error analyzing file " + file_path + ": " + str(e))
             return {"error": str(e), "matches": []}
     
     @handle_errors
@@ -239,9 +239,9 @@ class AstGrepMCP:
         # Sanitize pattern
         safe_pattern = sanitize_pattern(pattern)
         if safe_pattern != pattern:
-            self.logger.warning(f"Pattern was sanitized for security reasons")
+            self.logger.warning("Pattern was sanitized for security reasons")
         
-        self.logger.info(f"Searching directory: {directory}")
+        self.logger.info("Searching directory: " + directory)
         start_time = time.time()
         
         # Create a filter function if file_extensions are specified
@@ -266,8 +266,8 @@ class AstGrepMCP:
         files_with_matches = result.get("files_with_matches", 0)
         
         self.logger.info(
-            f"Search complete in {elapsed:.2f}s. "
-            f"Found matches in {files_with_matches}/{files_searched} files."
+            "Search complete in " + str(elapsed) + "s. "
+            "Found matches in " + str(files_with_matches) + "/" + str(files_searched) + " files."
         )
         
         # Log cache statistics periodically
@@ -289,9 +289,9 @@ class AstGrepMCP:
         handler = get_handler(language)
         
         if not handler:
-            self.logger.warning(f"No handler for language: {language}")
+            self.logger.warning("No handler for language: " + language)
             return {
-                "error": f"Language '{language}' is not supported or has no templates",
+                "error": "Language '" + language + "' is not supported or has no templates",
                 "patterns": {}
             }
         
@@ -322,6 +322,6 @@ class AstGrepMCP:
         self.logger.info("Starting AST Grep MCP server")
         
         # Log initial cache settings
-        self.logger.info(f"Result cache initialized with size: {result_cache.maxsize}")
+        self.logger.info("Result cache initialized with size: " + str(result_cache.maxsize))
         
         self.mcp.run() 

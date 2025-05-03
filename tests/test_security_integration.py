@@ -1,7 +1,5 @@
-import pytest
 import tempfile
 import os
-from pathlib import Path
 
 from src.ast_grep_mcp.core import AstGrepMCP, ServerConfig
 

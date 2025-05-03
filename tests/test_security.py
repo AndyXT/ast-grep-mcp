@@ -1,7 +1,5 @@
-import pytest
 import os
 import tempfile
-from pathlib import Path
 
 from src.ast_grep_mcp.utils.security import (
     sanitize_pattern,
