@@ -40,3 +40,9 @@ uv.lock
 
 # Claude
 **/.claude/settings.local.json
+
+# Added pytest and coverage artifacts
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/

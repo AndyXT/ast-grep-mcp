@@ -1,10 +1,8 @@
 from fastmcp import FastMCP
 from .ast_analyzer import AstAnalyzer
-from .language_handlers import get_handler, get_all_handlers
-import os
-import json
+from .language_handlers import get_handler
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any
 
 # Initialize the analyzer
 analyzer = AstAnalyzer()
@@ -151,5 +149,5 @@ def get_supported_languages() -> Dict[str, Any]:
 def run_server(host: str = "localhost", port: int = 8080):
     """Run the MCP server"""
     if host != "localhost" or port != 8080:
-        print(f"Note: FastMCP currently ignores host and port. Using default settings.")
+        print("Note: FastMCP currently ignores host and port. Using default settings.")
     mcp.run()
