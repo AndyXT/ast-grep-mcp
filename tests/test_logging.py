@@ -9,6 +9,12 @@ import os
 from src.ast_grep_mcp.core import AstGrepMCP, ServerConfig
 
 
+@pytest.fixture
+def server():
+    """Create an AstGrepMCP instance for testing."""
+    return AstGrepMCP()
+
+
 def test_default_logging(caplog):
     """Test that default logging works correctly."""
     caplog.set_level(logging.INFO)
@@ -238,4 +244,4 @@ def test_error_logging(server, caplog):
         language="nonexistent",
         pattern="test"
     )
-    assert "Invalid language" in caplog.text 
+    assert "Unsupported language" in caplog.text 
