@@ -1,11 +1,9 @@
 """
-Tests for error handling in class methods.
+Tests for error handling in tools.
 """
 import pytest
 from unittest.mock import patch, MagicMock
 import tempfile
-import os
-from pathlib import Path
 from src.ast_grep_mcp.core import AstGrepMCP
 
 

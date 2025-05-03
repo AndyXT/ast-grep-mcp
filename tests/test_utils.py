@@ -1,8 +1,7 @@
 """
 Tests for the utils module.
 """
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from src.ast_grep_mcp.utils import handle_errors
 
 

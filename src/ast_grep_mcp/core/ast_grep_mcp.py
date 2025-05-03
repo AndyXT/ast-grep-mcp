@@ -7,7 +7,7 @@ from ..ast_analyzer import AstAnalyzer
 from ..language_handlers import get_handler
 from ..utils import handle_errors
 from pathlib import Path
-from typing import Dict, Any, Callable, List, Optional
+from typing import Dict, Any, Optional
 import logging
 from .config import ServerConfig
 
@@ -197,9 +197,9 @@ class AstGrepMCP:
         }
     
     def start(self) -> None:
-        """Start the MCP server."""
+        """Start the MCP server"""
         if self.config.host != "localhost" or self.config.port != 8080:
             self.logger.warning("Note: FastMCP currently ignores host and port. Using default settings.")
         
-        self.logger.info(f"Starting AST Grep MCP server")
+        self.logger.info("Starting AST Grep MCP server")
         self.mcp.run() 

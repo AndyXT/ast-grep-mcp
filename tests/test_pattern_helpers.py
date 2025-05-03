@@ -1,7 +1,6 @@
 """
 Tests for pattern syntax error detection and helpful examples.
 """
-import pytest
 from src.ast_grep_mcp.utils.error_handling import (
     is_pattern_syntax_error,
     get_pattern_help,

@@ -1,19 +1,15 @@
 """
 Tests for the server module.
 """
-import pytest
 from unittest.mock import patch, MagicMock
 import tempfile
-import os
-from pathlib import Path
 from src.ast_grep_mcp.server import (
     analyze_code,
     refactor_code,
     analyze_file,
     get_language_patterns,
     get_supported_languages,
-    run_server,
-    _get_ast_grep_mcp
+    run_server
 )
 
 

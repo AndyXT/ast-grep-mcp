@@ -23,6 +23,16 @@ def ast_grep_mcp():
         yield instance
 
 
+@pytest.fixture
+def mock_fastmcp():
+    """Create a mock for FastMCP."""
+    mock = MagicMock()
+    mock_tool_decorator = MagicMock()
+    mock_tool_decorator.return_value = lambda x: x  # Identity function
+    mock.tool.return_value = mock_tool_decorator
+    return mock
+
+
 def test_init(ast_grep_mcp):
     """Test the initialization of AstGrepMCP."""
     # Test with default config
@@ -55,7 +65,7 @@ def test_init_registers_tools():
         mock_fastmcp.return_value = mock_mcp_instance
         
         # Initialize AstGrepMCP
-        server = AstGrepMCP()
+        AstGrepMCP()
         
         # Check that tool() was called exactly 5 times
         assert mock_mcp_instance.tool.call_count == 5
@@ -131,4 +141,14 @@ def test_start_with_custom_host_port(mock_fastmcp):
         mock_warning.assert_called_once()
     
     # Check that run was called once
-    mock_mcp_instance.run.assert_called_once() 
+    mock_mcp_instance.run.assert_called_once()
+
+
+def test_tool_registration(mock_fastmcp):
+    """Test that each tool is registered correctly."""
+    with patch('src.ast_grep_mcp.core.ast_grep_mcp.FastMCP', return_value=mock_fastmcp):
+        # Initialize AstGrepMCP
+        AstGrepMCP()
+        
+        # Check that tool() was called exactly 5 times
+        assert mock_fastmcp.tool.call_count == 5 

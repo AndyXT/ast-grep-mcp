@@ -4,7 +4,6 @@ Tests for the logging functionality of the AST Grep MCP server.
 
 import pytest
 import logging
-from pathlib import Path
 import tempfile
 import os
 from src.ast_grep_mcp.core import AstGrepMCP, ServerConfig
@@ -99,7 +98,7 @@ def test_logging_during_tool_execution(caplog):
     caplog.clear()
     
     # Execute analyze_code tool - this should produce log messages
-    result = server.analyze_code(
+    server.analyze_code(
         code="def test(): pass",
         language="python",
         pattern="def $FUNC_NAME(): $BODY"
@@ -113,7 +112,7 @@ def test_logging_during_tool_execution(caplog):
     
     # Test with an invalid language
     caplog.clear()
-    result = server.analyze_code(
+    server.analyze_code(
         code="def test(): pass",
         language="nonexistent",
         pattern="def $FUNC_NAME(): $BODY"
@@ -227,4 +226,16 @@ def test_server_config_validation():
         ServerConfig(port=70000)
     
     with pytest.raises(ValueError):
-        ServerConfig(port=-1) 
+        ServerConfig(port=-1)
+
+
+def test_error_logging(server, caplog):
+    """Test that errors are properly logged."""
+    # Test with an invalid language
+    caplog.clear()
+    server.analyze_code(
+        code="def test(): pass",
+        language="nonexistent",
+        pattern="test"
+    )
+    assert "Invalid language" in caplog.text 

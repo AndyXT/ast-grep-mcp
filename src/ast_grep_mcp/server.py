@@ -6,8 +6,6 @@ This module maintains backward compatibility with the previous functional API.
 
 from fastmcp import FastMCP
 from .ast_analyzer import AstAnalyzer
-from .language_handlers import get_handler
-from pathlib import Path
 from typing import Dict, Any
 from .core import AstGrepMCP, ServerConfig
 
