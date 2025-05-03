@@ -56,6 +56,8 @@ def start(
                                       help="Whether to log to console"),
     cache_size: int = typer.Option(128, "--cache-size", help="Size of the result cache"),
     config_file: str = typer.Option(None, "--config", help="Path to configuration file (JSON or YAML)"),
+    safe_roots: str = typer.Option(None, "--safe-roots", "-s", 
+                                  help="Comma-separated list of safe root directories for file operations"),
 ):
     """
     Start the AST Grep MCP server.
@@ -80,9 +82,16 @@ def start(
                 config.log_to_console = False
             if cache_size != 128:
                 config.cache_size = cache_size
+            if safe_roots is not None:
+                config.safe_roots = [root.strip() for root in safe_roots.split(",") if root.strip()]
         else:
             # Convert log_level string to integer
             log_level_int = validate_log_level(log_level)
+            
+            # Parse safe roots if provided
+            safe_roots_list = []
+            if safe_roots is not None:
+                safe_roots_list = [root.strip() for root in safe_roots.split(",") if root.strip()]
             
             # Create a server configuration
             config = ServerConfig(
@@ -91,7 +100,8 @@ def start(
                 log_level=log_level_int,
                 log_file=log_file,
                 log_to_console=log_to_console,
-                cache_size=cache_size
+                cache_size=cache_size,
+                safe_roots=safe_roots_list
             )
         
         # Set up logging
@@ -119,11 +129,13 @@ def serve(
                                       help="Whether to log to console"),
     cache_size: int = typer.Option(128, "--cache-size", help="Size of the result cache"),
     config_file: str = typer.Option(None, "--config", help="Path to configuration file (JSON or YAML)"),
+    safe_roots: str = typer.Option(None, "--safe-roots", "-s", 
+                                  help="Comma-separated list of safe root directories for file operations"),
 ):
     """
     Start the AST Grep MCP server (alias for 'start').
     """
-    return start(host, port, log_level, log_file, log_to_console, cache_size, config_file)
+    return start(host, port, log_level, log_file, log_to_console, cache_size, config_file, safe_roots)
 
 @app.command()
 def version():
@@ -138,6 +150,12 @@ def version():
     console.print("- Default port: 8080")
     console.print("- Default cache size: 128")
     console.print("- Default log level: INFO")
+    
+    # Show security features
+    console.print("\n[bold blue]Security Features:[/bold blue]")
+    console.print("- Pattern sanitization to prevent command injection")
+    console.print("- Path access controls via --safe-roots option")
+    console.print("- View docs/security-guide.md for more information")
 
 @app.command()
 def interactive():

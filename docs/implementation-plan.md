@@ -101,11 +101,11 @@ Current test coverage: 95% (maintained from previous phase)
 
 ---
 
-## Phase 7 – Security Hardening (🕐 1 day)
-1. 🛠️  Implement `sanitize_pattern` to strip shell metacharacters.  
-2. 🛠️  Add directory allow-list (`SAFE_ROOTS`) to prevent arbitrary FS access.  
-3. ✅  Tests attempt directory traversal & expect error.
-4. 🔖 No dangerous patterns reach `subprocess` layer.
+## Phase 7 – Security Hardening (✅ COMPLETED)
+1. ✅ Implement `sanitize_pattern` to strip shell metacharacters.  
+2. ✅ Add directory allow-list (`SAFE_ROOTS`) to prevent arbitrary FS access.  
+3. ✅ Tests attempt directory traversal & expect error.
+4. ✅ No dangerous patterns reach `subprocess` layer.
 
 ---
 

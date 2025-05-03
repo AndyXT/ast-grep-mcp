@@ -6,6 +6,7 @@ from fastmcp import FastMCP
 from ..ast_analyzer import AstAnalyzer
 from ..language_handlers import get_handler
 from ..utils import handle_errors, cached, result_cache
+from ..utils.security import sanitize_pattern, validate_file_access
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Set
 import logging
@@ -37,6 +38,12 @@ class AstGrepMCP:
         if hasattr(self.config, 'cache_size') and self.config.cache_size is not None:
             result_cache.maxsize = self.config.cache_size
             self.logger.info(f"Setting result cache size to {result_cache.maxsize}")
+        
+        # Log security configuration
+        if self.config.safe_roots:
+            self.logger.info(f"File access restricted to: {', '.join(self.config.safe_roots)}")
+        else:
+            self.logger.warning("No safe roots configured. File access is unrestricted.")
         
         # Register all tools
         self._register_tools()
@@ -76,9 +83,14 @@ class AstGrepMCP:
             self.logger.warning(f"Unsupported language: {language}")
             return {"error": f"Language '{language}' is not supported", "matches": []}
         
-        self.logger.debug(f"Analyzing code with pattern: {pattern}")
+        # Sanitize pattern to prevent command injection
+        safe_pattern = sanitize_pattern(pattern)
+        if safe_pattern != pattern:
+            self.logger.warning(f"Pattern was sanitized for security reasons")
+        
+        self.logger.debug(f"Analyzing code with pattern: {safe_pattern}")
         start_time = time.time()
-        matches = self.analyzer.find_patterns(code, language, pattern)
+        matches = self.analyzer.find_patterns(code, language, safe_pattern)
         elapsed = time.time() - start_time
         
         self.logger.debug(f"Found {len(matches)} matches in {elapsed:.4f}s")
@@ -108,10 +120,17 @@ class AstGrepMCP:
             self.logger.warning(f"Unsupported language: {language}")
             return {"error": f"Language '{language}' is not supported", "success": False}
         
-        self.logger.debug(f"Refactoring code with pattern: {pattern}")
+        # Sanitize pattern and replacement to prevent command injection
+        safe_pattern = sanitize_pattern(pattern)
+        safe_replacement = sanitize_pattern(replacement)
+        
+        if safe_pattern != pattern or safe_replacement != replacement:
+            self.logger.warning(f"Pattern or replacement was sanitized for security reasons")
+        
+        self.logger.debug(f"Refactoring code with pattern: {safe_pattern}")
         start_time = time.time()
         original_code = code
-        refactored_code = self.analyzer.apply_refactoring(code, language, pattern, replacement)
+        refactored_code = self.analyzer.apply_refactoring(code, language, safe_pattern, safe_replacement)
         elapsed = time.time() - start_time
         
         # Count matches (by comparing refactored code with original)
@@ -138,6 +157,11 @@ class AstGrepMCP:
         Returns:
             Dictionary with pattern matches and their locations
         """
+        # Validate file access permissions
+        access_error = validate_file_access(file_path, self.config.safe_roots)
+        if access_error:
+            return {"error": access_error, "matches": []}
+        
         path = Path(file_path)
         if not path.exists() or not path.is_file():
             self.logger.warning(f"File not found: {file_path}")
@@ -160,11 +184,16 @@ class AstGrepMCP:
             with open(path, "r", encoding="utf-8") as f:
                 code = f.read()
             
-            self.logger.debug(f"Analyzing file: {file_path} with pattern: {pattern}")
+            # Sanitize pattern
+            safe_pattern = sanitize_pattern(pattern)
+            if safe_pattern != pattern:
+                self.logger.warning(f"Pattern was sanitized for security reasons")
+            
+            self.logger.debug(f"Analyzing file: {file_path} with pattern: {safe_pattern}")
             start_time = time.time()
             
             # Use the cached analyze_code method
-            result = self.analyze_code(code, language, pattern)
+            result = self.analyze_code(code, language, safe_pattern)
             elapsed = time.time() - start_time
             
             self.logger.debug(f"File analysis complete in {elapsed:.4f}s")
@@ -202,6 +231,16 @@ class AstGrepMCP:
         Returns:
             Dictionary with matches grouped by file
         """
+        # Validate directory access permissions
+        access_error = validate_file_access(directory, self.config.safe_roots)
+        if access_error:
+            return {"error": access_error, "matches": {}}
+        
+        # Sanitize pattern
+        safe_pattern = sanitize_pattern(pattern)
+        if safe_pattern != pattern:
+            self.logger.warning(f"Pattern was sanitized for security reasons")
+        
         self.logger.info(f"Searching directory: {directory}")
         start_time = time.time()
         
@@ -216,7 +255,7 @@ class AstGrepMCP:
         # Use the analyzer's search_directory method
         result = self.analyzer.search_directory(
             directory, 
-            pattern, 
+            safe_pattern, 
             parallel=parallel, 
             max_workers=max_workers,
             file_filter=file_filter
