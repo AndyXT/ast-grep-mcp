@@ -28,27 +28,36 @@ Current test coverage: 91% (greatly improved from 45% baseline)
 
 ---
 
-## Phase 1 – Modularisation (🕐 ~1–2 days)
+## Phase 1 – Modularisation (✅ COMPLETED)
 Goal: move logic out of monolithic files into clear modules/classes.
 
-1. 🛠️  **Create package `ast_grep_mcp.core`** with a new class `AstGrepMCP`.  
-   • Migrate `run_server` and tool registration to methods of this class.  
-   • Keep existing functional API for backward compatibility; just delegate to the new class.
-2. 🛠️  **Introduce `config.py`** (dataclass) holding host/port & other future settings.
-3. ✅  **Unit tests**  
-   • `test_core_initialisation.py` – instantiating `AstGrepMCP` should register ≥5 tools.  
-   • `test_run_server.py` – calling `AstGrepMCP().start()` should call `mcp.run()` once (stub with monkeypatch).
-4. 🔖 All tests pass; `python main.py serve` still works.
+1. ✅ **Created package `ast_grep_mcp.core`** with a new class `AstGrepMCP`.  
+   • Migrated `run_server` and tool registration to methods of this class.  
+   • Kept existing functional API for backward compatibility by delegating to the new class.
+2. ✅ **Introduced `config.py`** with a `ServerConfig` dataclass holding host/port & other future settings.
+3. ✅ **Added unit tests**  
+   • `test_core.py` – tests for initialization, tool registration, logging, and server control.  
+   • Updated existing tests to work with the new architecture.
+4. ✅ All tests pass; `python main.py serve` still works.
+
+Current test coverage: 93% (increased from 91%)
 
 ---
 
-## Phase 2 – Robust Error Handling (🕐 ~1 day)
-1. 🛠️  **Wrap all tool bodies with structured `try/except`** returning consistent `{error: str}` on failure.  
-   • Extract helper `handle_errors` decorator in `ast_grep_mcp.utils`.
-2. ✅  **Tests**  
-   • Simulate unsupported language => response contains `error` key.  
-   • Simulate nonexistent file path for `analyze_file`.
-3. 🔖 No uncaught exceptions propagate to FastMCP; tests pass.
+## Phase 2 – Robust Error Handling (✅ COMPLETED)
+1. ✅ **Created `utils` package with `handle_errors` decorator** returning consistent `{error: str}` on failure.  
+   • Added robust error handling to all methods.
+   • Ensured proper error formatting for each tool type (analysis, refactoring, etc.).
+2. ✅ **Added comprehensive test suite**  
+   • `test_utils.py` – tests for the decorator in isolation.
+   • `test_error_handling.py` – tests for error handling in the actual tool methods.
+3. ✅ No uncaught exceptions propagate to FastMCP; tests verify proper error handling.
+4. ✅ **Enhanced error messages for pattern syntax errors** (additional improvement)
+   • Added pattern syntax error detection
+   • Provided language-specific pattern examples in error messages
+   • Included general pattern syntax guidelines
+
+Current test coverage: 95% (increased from 93%)
 
 ---
 
