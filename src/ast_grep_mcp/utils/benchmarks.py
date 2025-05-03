@@ -13,7 +13,6 @@ import os
 import tempfile
 import random
 import string
-import json
 from ..ast_analyzer import AstAnalyzer
 
 logger = logging.getLogger("ast_grep_mcp.benchmarks")

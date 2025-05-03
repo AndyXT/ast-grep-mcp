@@ -160,7 +160,7 @@ def benchmark(
             progress.update(task, completed=True)
         
         # Display results in a table
-        table = Table(title=f"AST Grep Performance Benchmark Results")
+        table = Table(title="AST Grep Performance Benchmark Results")
         table.add_column("Pattern", style="cyan")
         table.add_column("Best Config", style="green")
         table.add_column("Speedup", style="magenta")
@@ -175,9 +175,9 @@ def benchmark(
         
         # Display overall result
         if result["success"]:
-            console.print(f"[bold green]✓ Target speedup achieved![/bold green]")
+            console.print("[bold green]✓ Target speedup achieved![/bold green]")
         else:
-            console.print(f"[bold yellow]✗ Target speedup not achieved.[/bold yellow]")
+            console.print("[bold yellow]✗ Target speedup not achieved.[/bold yellow]")
         
         console.print(f"Best configuration: [bold green]{result['best_config']}[/bold green]")
         console.print(f"Average speedup: [bold]{result['best_avg_speedup']:.2f}x[/bold] ({result['best_avg_speedup_percentage']:.2f}%)")
@@ -204,19 +204,19 @@ def benchmark(
             
         # Add configuration example
         console.print("\n[bold blue]Example Configuration:[/bold blue]")
-        console.print(f"""
+        console.print("""
 # Add to your MCP configuration:
-"mcpServers": {{
-  "ast-grep": {{
+"mcpServers": {
+  "ast-grep": {
     "command": "uv",
     "args": [
       "--directory", "/path/to/ast-grep-mcp",
       "run", "python", "main.py", "server",
       "--cache-size", "128"
     ],
-    "env": {{}}
-  }}
-}}
+    "env": {}
+  }
+}
         """)
         
         return 0 if result["success"] else 1

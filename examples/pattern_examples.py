@@ -7,7 +7,6 @@ Run it to see how patterns match against sample code.
 """
 
 import sys
-import os
 import logging
 from pathlib import Path
 
@@ -110,9 +109,6 @@ def main():
     """Run pattern examples."""
     logger.info("AST-GREP-MCP PATTERN EXAMPLES")
     logger.info("============================")
-    
-    # Get all language handlers to demonstrate patterns
-    analyzer = AstAnalyzer()
     
     # Show Python examples
     logger.info("\nPYTHON PATTERN EXAMPLES:")

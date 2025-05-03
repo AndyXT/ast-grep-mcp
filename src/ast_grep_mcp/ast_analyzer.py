@@ -1,11 +1,9 @@
 from ast_grep_py import SgRoot
-from typing import List, Dict, Any, Optional, Tuple, Callable, Iterable
+from typing import List, Dict, Any, Optional, Tuple, Callable
 from pathlib import Path
-import multiprocessing
 import logging
 import os
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from functools import partial
 import math
 
 class AstAnalyzer:
