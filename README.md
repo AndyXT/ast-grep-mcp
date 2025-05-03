@@ -8,6 +8,8 @@ An MCP (Model-Check-Path) server that uses ast-grep for advanced code analysis a
 - Structural pattern matching on code
 - Support for multiple languages (Python, JavaScript, TypeScript, Lua, C, Rust, Go)
 - Code refactoring capabilities
+- LRU caching for improved performance
+- Parallel directory search with batching for large codebases
 - Built with UV for blazing fast dependency management
 
 ## Prerequisites
@@ -57,11 +59,31 @@ Start the server with default settings:
 python main.py serve
 ```
 
-Customize host and port:
+Customize host, port and cache size:
 
 ```bash
-python main.py serve --host 0.0.0.0 --port 9000
+python main.py serve --host 0.0.0.0 --port 9000 --cache-size 256
 ```
+
+### Performance Optimization
+
+The server includes several performance optimizations:
+
+1. **LRU Cache**: Results are cached to avoid redundant pattern matching operations
+2. **Parallel Processing**: For large directories (>200 files), search can be parallelized
+3. **Batch Processing**: Files are processed in batches to optimize parallel execution
+
+#### Running Benchmarks
+
+To find the optimal configuration for your workload and system, use the benchmark command:
+
+```bash
+python main.py benchmark --num-files 300 --batch-sizes auto,5,10,20,50
+```
+
+This will create synthetic test files, run both sequential and parallel searches, and provide recommendations for your specific environment.
+
+**Note**: For small to medium workloads (<200 files), sequential processing is generally faster due to the overhead of parallel processing. The caching mechanism provides significant speedup for repeated operations regardless of processing mode.
 
 ### MCP Server Configuration
 
@@ -74,7 +96,8 @@ To configure an AI assistant to use this MCP server, use the following configura
       "command": "uv",
       "args": [
         "--directory", "/path/to/ast-grep-mcp",
-        "run", "python", "main.py"
+        "run", "python", "main.py", "server",
+        "--cache-size", "128"
       ],
       "env": {}
     }
@@ -89,8 +112,41 @@ This server exposes the following tools:
 1. `analyze_code` - Find patterns in code
 2. `refactor_code` - Replace patterns in code
 3. `analyze_file` - Analyze patterns in a file
-4. `get_language_patterns` - Get common patterns for a language
-5. `get_supported_languages` - List supported languages
+4. `search_directory` - Search for patterns across all files in a directory
+5. `get_language_patterns` - Get common patterns for a language
+6. `get_supported_languages` - List supported languages
+
+## Pattern Syntax Guide
+
+AST-grep uses a specialized syntax for pattern matching. Here are the key elements:
+
+### Pattern Syntax Elements
+
+| Syntax | Description | Example |
+|--------|-------------|---------|
+| `$NAME` | Matches a single named node (variable, identifier, etc.) | `def $FUNC_NAME` |
+| `$$$PARAMS` | Matches multiple nodes (zero or more) | `def name($$$PARAMS)` |
+| `$...X` | Matches a node of specific type X | `$...expression` |
+| `$_` | Wildcard that matches any single node | `if $_: print()` |
+
+### Common Issues & Solutions
+
+- **Parameters not matching**: For function parameters, always use triple dollar `$$$PARAMS` to match variable number of parameters
+- **Compound statements**: For blocks or statements with nested content, use triple dollar for the body: `if $COND: $$$BODY`
+- **String literals**: To match strings, use quote characters: `print("$MESSAGE")`
+- **Whitespace**: Pattern matching ignores most whitespace differences
+
+### Refactoring Patterns
+
+When refactoring, the replacement pattern must use the same metavariables ($NAME, etc.) that were matched in the search pattern:
+
+```
+# Search pattern
+print($$$ARGS)
+
+# Replacement pattern
+console.log($$$ARGS)
+```
 
 ## Pattern Examples
 
@@ -108,13 +164,17 @@ print($$$ARGS)
 
 # Find specific function calls
 requests.get($URL)
+
+# Find if statements with body
+if $CONDITION:
+    $$$BODY
 ```
 
 ### JavaScript Pattern Examples
 
 ```
 # Find all function declarations
-function $NAME($$$PARAMS)
+function $NAME($$$PARAMS) { $$$BODY }
 
 # Find all arrow functions
 ($$$PARAMS) => $$$BODY
@@ -124,6 +184,9 @@ console.log($$$ARGS)
 
 # Find all React components
 <$COMPONENT $$$PROPS>$$$CHILDREN</$COMPONENT>
+
+# Find if statements
+if ($CONDITION) { $$$BODY }
 ```
 
 ## Development
@@ -135,9 +198,16 @@ ast-grep-mcp/
    src/
       ast_grep_mcp/
           __init__.py
-          ast_analyzer.py    # Core AST analysis functionality
-          server.py          # MCP server implementation
-          language_handlers/ # Language-specific modules
+          ast_analyzer.py     # Core AST analysis functionality
+          server.py           # MCP server implementation
+          language_handlers/  # Language-specific modules
+          core/               # Core server functionality
+              ast_grep_mcp.py # Main server class
+              config.py       # Server configuration
+          utils/              # Utility modules
+              error_handling.py # Error handling utilities
+              result_cache.py   # Caching implementation
+              benchmarks.py     # Performance benchmarking
    main.py                    # CLI entry point
    pyproject.toml             # Project configuration
    README.md                  # This file
@@ -165,6 +235,9 @@ uv run pytest
 
 # Run specific test
 uv run pytest tests/path/to/test.py::test_function_name -v
+
+# Run performance tests
+uv run pytest tests/test_performance.py -v
 
 # Add dependency
 uv add package-name

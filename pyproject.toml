@@ -29,3 +29,10 @@ extra-languages = [
     "tree-sitter-lua>=0.0.14",
     "tree-sitter-go>=0.20.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "integration_tests"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "benchmark: marks tests as benchmark tests (deselect with '-m \"not benchmark\"')"
+]

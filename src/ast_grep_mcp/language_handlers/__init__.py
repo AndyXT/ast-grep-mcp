@@ -1,11 +1,11 @@
 from .base import LanguageHandler
 from .python_handler import PythonHandler
-from .javascript_handler import JavaScriptHandler
+from .javascript_handler import JavaScriptHandler, TypeScriptHandler
 
 # Register all language handlers
 handlers = {
     handler.language_name: handler()
-    for handler in [PythonHandler, JavaScriptHandler]
+    for handler in [PythonHandler, JavaScriptHandler, TypeScriptHandler]
 }
 
 def get_handler(language: str) -> LanguageHandler:
