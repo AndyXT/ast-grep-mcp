@@ -61,7 +61,8 @@ jobs:
     - name: Run tests with pytest
       run: |
         source .venv/bin/activate
-        pytest -v --cov=src.ast_grep_mcp --cov-report=xml
+        # Exclude test_mcp_client.py as it requires a running server
+        pytest -v --cov=src.ast_grep_mcp --cov-report=xml tests/
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
