@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ast-grep": {
+      "command": "uv",
+      "args": [
+        "--directory", "/Users/andrestreto/proj/ast-grep-mcp",
+        "run", "python", "main.py"
+      ],
+      "env": {}
+    }
+  }
+}
