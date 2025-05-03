@@ -1,9 +1,7 @@
 import pytest
 from typer.testing import CliRunner
-import os
 import json
 import tempfile
-import yaml
 from pathlib import Path
 import sys
 

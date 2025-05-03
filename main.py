@@ -149,7 +149,6 @@ def interactive():
     """
     from src.ast_grep_mcp.ast_analyzer import AstAnalyzer
     from src.ast_grep_mcp.language_handlers import get_handler
-    import readline
     
     console.print("[bold green]AST Grep Interactive Mode[/bold green]")
     console.print("Type 'help' for available commands, 'exit' to quit")
