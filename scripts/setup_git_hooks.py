@@ -6,7 +6,6 @@ Script to set up Git pre-commit hooks for AST-Grep analysis.
 import os
 import sys
 import stat
-import json
 from pathlib import Path
 
 # Path to the Git hooks directory
