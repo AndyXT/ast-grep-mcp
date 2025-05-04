@@ -109,24 +109,52 @@ Current test coverage: 95% (maintained from previous phase)
 
 ---
 
-## Phase 8 – Extended Language Support (🕐 ongoing)
-1. 🛠️  Template handler generator script (`uv run python scripts/new_language.py rust`).  
-2. 🛠️  Add at least **C**, **Go** & **Rust** handlers.
-3. ✅  Unit tests for default patterns returned by each handler.
-4. 🛠️  **Enhanced Pattern Library** – Significantly expand pattern templates for each language:
-   • Add common anti-patterns and code smells (10+ per language)
-   • Include performance optimization patterns
-   • Provide security vulnerability patterns
-   • Add common refactoring patterns
-5. ✅  Documentation for all pattern templates with examples and rationales.
-6. 🔖 At least 25 pattern templates available for each supported language.
+## Phase 8 – Extended Language Support (✅ COMPLETED)
+1. ✅ **Template handler generator script** (`scripts/new_language.py`).  
+   • Implemented support for generating boilerplate for new language handlers
+   • Added auto-registration in the `__init__.py` file
+   • Fixed all linting issues
+2. ✅ **Added handlers for C, Go & Rust languages**.
+   • Created comprehensive pattern libraries for each language
+   • Enhanced existing Python and JavaScript/TypeScript handlers
+3. ✅ **Unit tests for all language handlers**
+   • Added tests to verify language name and file extensions
+   • Added tests to ensure pattern libraries contain required patterns
+4. ✅ **Enhanced Pattern Library**
+   • Added common anti-patterns and code smells (10+ per language)
+   • Included performance optimization patterns (5+ per language)
+   • Provided security vulnerability patterns (5+ per language)
+   • Added common refactoring patterns (6+ per language)
+5. ✅ **Documentation for all pattern templates**
+   • Created pattern-library.md with examples and explanations
+   • Organized by language and pattern category
+   • Added code examples for each pattern
+6. ✅ **Pattern count by language**:
+   • Rust: 36 patterns
+   • Go: 36 patterns
+   • C: 36 patterns
+   • Python: 67 patterns
+   • JavaScript: 57 patterns
+   • TypeScript: 94 patterns (includes JavaScript patterns)
+
+Current test coverage: maintained at 95%
 
 ---
 
-## Phase 9 – UV & Packaging Polish (🕐 <1 day)
-1. 🛠️  Fill out `[project]` & `[build-system]` in `pyproject.toml`.  
-2. 🛠️  Add `hatchling` build backend and scripts section.  
-3. ✅  `uv pip install -e .` succeeds; `python -m ast_grep_mcp` entrypoint works.
+## Phase 9 – UV & Packaging Polish (✅ COMPLETED)
+1. ✅ **Enhanced `pyproject.toml`**
+   • Added author information, classifiers, keywords and license
+   • Added project URLs for homepage, documentation, and issues
+   • Expanded package metadata for PyPI publishing
+2. ✅ **Added module entrypoint**
+   • Created `__main__.py` file for running as a module
+   • Added console script entry point for command-line usage
+3. ✅ **Package installation and usage**
+   • Verified `uv pip install -e .` succeeds
+   • Confirmed `python -m ast_grep_mcp` command works
+   • Tested `ast-grep-mcp` console script functionality
+
+Package can now be easily distributed, installed, and run using standard Python tooling.
 
 ---
 

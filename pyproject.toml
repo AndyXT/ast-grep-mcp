@@ -4,6 +4,21 @@ version = "0.1.0"
 description = "MCP server using ast-grep for code analysis and refactoring"
 readme = "README.md"
 requires-python = ">=3.10"
+authors = [
+    {name = "AST-Grep MCP Contributors", email = "info@example.com"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = ["ast", "grep", "code", "analysis", "refactoring", "mcp"]
+license = {text = "MIT"}
 dependencies = [
     "ast_grep_py==0.37.0",
     "fastmcp>=0.1.0",
@@ -11,6 +26,15 @@ dependencies = [
     "rich>=13.0.0",
     "pyyaml>=6.0.0",
 ]
+
+[project.scripts]
+ast-grep-mcp = "ast_grep_mcp.__main__:main_entry_point"
+
+[project.urls]
+Homepage = "https://github.com/yourorg/ast-grep-mcp"
+Documentation = "https://github.com/yourorg/ast-grep-mcp/docs"
+Repository = "https://github.com/yourorg/ast-grep-mcp.git"
+Issues = "https://github.com/yourorg/ast-grep-mcp/issues"
 
 [build-system]
 requires = ["hatchling"]
