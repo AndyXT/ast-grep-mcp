@@ -113,6 +113,13 @@ Current test coverage: 95% (maintained from previous phase)
 1. 🛠️  Template handler generator script (`uv run python scripts/new_language.py rust`).  
 2. 🛠️  Add at least **C**, **Go** & **Rust** handlers.
 3. ✅  Unit tests for default patterns returned by each handler.
+4. 🛠️  **Enhanced Pattern Library** – Significantly expand pattern templates for each language:
+   • Add common anti-patterns and code smells (10+ per language)
+   • Include performance optimization patterns
+   • Provide security vulnerability patterns
+   • Add common refactoring patterns
+5. ✅  Documentation for all pattern templates with examples and rationales.
+6. 🔖 At least 25 pattern templates available for each supported language.
 
 ---
 
@@ -120,6 +127,74 @@ Current test coverage: 95% (maintained from previous phase)
 1. 🛠️  Fill out `[project]` & `[build-system]` in `pyproject.toml`.  
 2. 🛠️  Add `hatchling` build backend and scripts section.  
 3. ✅  `uv pip install -e .` succeeds; `python -m ast_grep_mcp` entrypoint works.
+
+---
+
+## Phase 10 – Enhanced Error Feedback (🕐 1-2 days)
+1. 🛠️  **Implement pattern suggestion system** for when patterns don't match:
+   • Suggest simpler variants of the pattern
+   • Provide contextual examples based on the code being analyzed
+   • Add "Did you mean...?" suggestions for similar patterns
+2. 🛠️  **Add interactive pattern builder** via CLI:
+   • Step users through pattern creation
+   • Show live matches as pattern is built
+   • Save commonly used patterns to user library
+3. ✅  Tests verify helpful suggestions are provided when patterns don't match.
+4. 🔖 Error messages include at least 2 actionable suggestions when applicable.
+
+---
+
+## Phase 11 – Configuration System (🕐 2-3 days)
+1. 🛠️  **Create comprehensive configuration system**:
+   • YAML-based config file support (`ast-grep.yml`)
+   • Support for `.ast-grepignore` files (similar to .gitignore)
+   • Environment variable overrides
+   • Project-specific configurations
+2. 🛠️  **Add configurable options**:
+   • Ignore patterns/directories
+   • Custom pattern libraries
+   • Output formats (JSON, SARIF, text, HTML)
+   • Integration hooks (CI systems, editors)
+3. ✅  Tests for config loading, validation, and application.
+4. 🔖 Configuration documentation with examples.
+
+---
+
+## Phase 12 – Severity Levels & Issue Classification (🕐 2 days)
+1. 🛠️  **Implement severity classification system**:
+   • Define severity levels (critical, high, medium, low, info)
+   • Add metadata to pattern templates with severity levels
+   • Allow custom severity overrides in configuration
+2. 🛠️  **Add issue categorization**:
+   • Security vulnerabilities
+   • Performance issues
+   • Code style violations
+   • Potential bugs
+   • Maintainability concerns
+3. 🛠️  **Add reporting features**:
+   • Summary statistics by severity and category
+   • Filterable output based on severity level
+   • Trend analysis for projects over time
+4. ✅  Tests for severity level assignment and filtering.
+5. 🔖 CLI supports filtering by severity (`--min-severity=high`).
+
+---
+
+## Phase 13 – Multi-file Pattern Support (🕐 3-4 days)
+1. 🛠️  **Design multi-file pattern specification format**:
+   • YAML-based pattern definition
+   • Support for file relationships and context
+   • Pattern composition across files
+2. 🛠️  **Implement cross-file pattern engine**:
+   • Build relationship graph between files
+   • Track imports and dependencies
+   • Support for architectural pattern detection
+3. 🛠️  **Create standard multi-file patterns**:
+   • Design pattern implementations (Factory, Singleton, etc.)
+   • Anti-patterns (Circular dependencies, God objects)
+   • Framework-specific architectural violations
+4. ✅  Tests with complex multi-file pattern scenarios.
+5. 🔖 Documentation on creating custom multi-file patterns.
 
 ---
 

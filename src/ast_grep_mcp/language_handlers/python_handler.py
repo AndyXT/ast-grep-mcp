@@ -11,6 +11,16 @@ class PythonHandler(LanguageHandler):
         return [".py"]
     
     def get_default_patterns(self) -> Dict[str, str]:
+        """
+        Return default AST patterns for Python.
+        
+        Includes patterns for:
+        - Common code constructs
+        - Anti-patterns and code smells
+        - Performance optimizations
+        - Security vulnerabilities
+        - Refactoring opportunities
+        """
         return {
             # Function patterns
             "function_definition": "def $NAME($$$PARAMS):",
@@ -64,4 +74,40 @@ class PythonHandler(LanguageHandler):
             "walrus_operator": "$NAME := $EXPR",
             "type_hint": "($$$PARAMS) -> $RETURN_TYPE",
             "dataclass": "@dataclass\nclass $NAME:",
+            
+            # Anti-patterns and code smells
+            "bare_except": "try:\n    $$$BODY\nexcept:\n    $$$HANDLER",
+            "except_pass": "try:\n    $$$BODY\nexcept $EXCEPTION:\n    pass",
+            "mutable_default_arg": "def $NAME($PARAM=$MUTABLE_VALUE):",
+            "global_statement": "global $NAME",
+            "nested_function": "def $OUTER($$$OUTER_PARAMS):\n    $$$OUTER_BODY\n    def $INNER($$$INNER_PARAMS):\n        $$$INNER_BODY",
+            "nested_loops": "for $OUTER_VAR in $OUTER_ITER:\n    for $INNER_VAR in $INNER_ITER:\n        $$$BODY",
+            "long_function": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+            
+            # Performance optimizations
+            "list_in_loop": "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)",
+            "string_concat_in_loop": "for $VAR in $ITER:\n    $STR += $SOMETHING",
+            "inefficient_dict_lookup": "$DICT[$KEY] if $KEY in $DICT else $DEFAULT",
+            "repeated_calculation": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+            "inefficient_list_creation": "[x for x in range($N)]",
+            "unnecessary_list": "list($GENERATOR)",
+            
+            # Security vulnerabilities
+            "eval_call": "eval($EXPR)",
+            "exec_call": "exec($CODE)",
+            "shell_true": "subprocess.run($CMD, shell=True)",
+            "pickle_load": "pickle.load($FILE)",
+            "yaml_load": "yaml.load($DATA)",
+            "sql_format": "cursor.execute(f\"$$$SQL {$USER_INPUT}\")",
+            "open_file_without_close": "f = open($FILENAME, 'r')",
+            "tempfile_insecure": "tempfile.mktemp($$$ARGS)",
+            
+            # Refactoring patterns
+            "if_return_early": "if $COND:\n    return $EARLY\n$$$MORE_CODE\nreturn $LATE",
+            "multiple_if_returns": "if $COND1:\n    return $VAL1\nelif $COND2:\n    return $VAL2\nelse:\n    return $VAL3",
+            "dict_get_with_default": "if $KEY in $DICT:\n    $VAR = $DICT[$KEY]\nelse:\n    $VAR = $DEFAULT",
+            "try_except_else": "try:\n    $$$BODY\nexcept $EXCEPTION:\n    $$$HANDLER\nelse:\n    $$$SUCCESS",
+            "repeated_condition": "if $COND:\n    $$$BODY1\n$$$OTHER_CODE\nif $COND:\n    $$$BODY2",
+            "explicit_none_compare": "if $VAR == None:",
+            "redundant_with_open": "with open($FILE, $MODE) as $F:\n    $CONTENT = $F.read()\n    $$$OPERATIONS_ON_CONTENT",
         }
