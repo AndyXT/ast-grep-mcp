@@ -265,9 +265,16 @@ def get_pattern_help(language: str, error_message: Optional[str] = None) -> Dict
     handler = get_handler(language)
     if handler:
         patterns = handler.get_default_patterns()
-        # Get a few representative patterns
-        examples = list(patterns.items())[:5] if len(patterns) > 5 else list(patterns.items())
-        help_info["syntax_examples"] = examples
+        # Get a few representative patterns - avoid unnecessary list conversion
+        if patterns:
+            # Only convert to list if we need to slice it
+            if len(patterns) > 5:
+                # Convert to list only when necessary for slicing
+                examples = list(patterns.items())[:5]
+            else:
+                # Use items directly when no slicing needed
+                examples = patterns.items()
+            help_info["syntax_examples"] = examples
     
     # Add common errors and solutions
     if language in LANGUAGE_SPECIFIC_ERRORS:

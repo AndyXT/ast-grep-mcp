@@ -118,9 +118,11 @@ def generate_commented_config() -> str:
     lines.append(comments["# Security Configuration"])
     lines.append(f"{comments['safe_roots']}")
     lines.append("safe_roots:")
-    for root in config_dict['safe_roots']:
-        lines.append(f"  - {root}")
-    if not config_dict['safe_roots']:
+    
+    # Use list comprehension instead of appending in a loop
+    if config_dict['safe_roots']:
+        lines.extend([f"  - {root}" for root in config_dict['safe_roots']])
+    else:
         lines.append("  # Add directories that are safe to access, e.g.:")
         lines.append("  # - /path/to/project")
     lines.append("")
@@ -133,9 +135,11 @@ def generate_commented_config() -> str:
     lines.append(f"use_default_ignores: {str(config_dict['use_default_ignores']).lower()}")
     lines.append(f"{comments['ignore_patterns']}")
     lines.append("ignore_patterns:")
-    for pattern in config_dict['ignore_patterns']:
-        lines.append(f"  - {pattern}")
-    if not config_dict['ignore_patterns']:
+    
+    # Use list comprehension instead of appending in a loop
+    if config_dict['ignore_patterns']:
+        lines.extend([f"  - {pattern}" for pattern in config_dict['ignore_patterns']])
+    else:
         lines.append("  # - '*.tmp'  # Example: ignore temporary files")
     lines.append("")
     
@@ -148,8 +152,7 @@ def generate_commented_config() -> str:
     lines.append(f"  {comments['language_templates']}")
     lines.append("  language_templates:")
     if pattern_config['language_templates']:
-        for lang, template_dir in pattern_config['language_templates'].items():
-            lines.append(f"    {lang}: {template_dir}")
+        lines.extend([f"    {lang}: {template_dir}" for lang, template_dir in pattern_config['language_templates'].items()])
     else:
         lines.append("    # python: /path/to/python/templates")
     lines.append(f"  {comments['validation_strictness']}")
@@ -157,10 +160,11 @@ def generate_commented_config() -> str:
     lines.append(f"  {comments['custom_patterns']}")
     lines.append("  custom_patterns:")
     if pattern_config['custom_patterns']:
+        # Handle nested structure with flattening approach
         for lang, patterns in pattern_config['custom_patterns'].items():
             lines.append(f"    {lang}:")
-            for name, pattern in patterns.items():
-                lines.append(f"      {name}: '{pattern}'")
+            # Use list comprehension for inner loop
+            lines.extend([f"      {name}: '{pattern}'" for name, pattern in patterns.items()])
     else:
         lines.append("    # python:")
         lines.append("    #   for_loop: 'for $VAR in $ITER:'")
@@ -219,8 +223,7 @@ def generate_commented_config() -> str:
     lines.append(f"{comments['options']}")
     lines.append("options:")
     if config_dict['options']:
-        for name, value in config_dict['options'].items():
-            lines.append(f"  {name}: {value}")
+        lines.extend([f"  {name}: {value}" for name, value in config_dict['options'].items()])
     else:
         lines.append("  # Add any custom options here")
     

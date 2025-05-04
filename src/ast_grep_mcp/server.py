@@ -6,7 +6,7 @@ This module maintains backward compatibility with the previous functional API.
 
 from fastmcp import FastMCP
 from .ast_analyzer import AstAnalyzer
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from .core import AstGrepMCP, ServerConfig
 
 # Initialize the analyzer
@@ -15,15 +15,25 @@ analyzer = AstAnalyzer()
 # Create an MCP server
 mcp = FastMCP("AstGrepCodeAnalyzer")
 
-# Create a singleton instance of AstGrepMCP for backward compatibility
-_ast_grep_mcp_instance = None
+# Singleton class for AstGrepMCP to replace global variable
+class AstGrepMCPSingleton:
+    _instance: Optional[AstGrepMCP] = None
+    
+    @classmethod
+    def get_instance(cls) -> AstGrepMCP:
+        """Get the singleton instance of AstGrepMCP."""
+        if cls._instance is None:
+            cls._instance = AstGrepMCP()
+        return cls._instance
+    
+    @classmethod
+    def reset_instance(cls) -> None:
+        """Reset the singleton instance (useful for testing)."""
+        cls._instance = None
 
 def _get_ast_grep_mcp() -> AstGrepMCP:
     """Get the singleton instance of AstGrepMCP."""
-    global _ast_grep_mcp_instance
-    if _ast_grep_mcp_instance is None:
-        _ast_grep_mcp_instance = AstGrepMCP()
-    return _ast_grep_mcp_instance
+    return AstGrepMCPSingleton.get_instance()
 
 @mcp.tool()
 def analyze_code(code: str, language: str, pattern: str) -> Dict[str, Any]:

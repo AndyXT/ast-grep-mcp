@@ -840,21 +840,8 @@ class AstAnalyzer:
                 "matches": {}
             }
         
-        # Get all files in the directory
-        files = []
-        for root, _, filenames in os.walk(directory):
-            for filename in filenames:
-                file_path = Path(os.path.join(root, filename))
-                extension = file_path.suffix.lower()
-                
-                # Check if file has a supported extension
-                is_supported = any(
-                    extension in exts for exts in self.supported_languages.values()
-                )
-                
-                # Apply custom filter if provided
-                if is_supported and (file_filter is None or file_filter(file_path)):
-                    files.append(str(file_path))
+        # Get all files in the directory - refactored to use list comprehension
+        files = self._collect_supported_files(directory, file_filter)
         
         num_files = len(files)
         self.logger.info(f"Found {num_files} files to search in {directory}")
@@ -901,7 +888,7 @@ class AstAnalyzer:
             else:
                 batch_size = max(10, math.ceil(num_files / (max_workers * 2)))
         
-        # Create batches of files
+        # Create batches of files - refactored to use list comprehension
         batches = [files[i:i + batch_size] for i in range(0, len(files), batch_size)]
         
         self.logger.info(
@@ -929,3 +916,28 @@ class AstAnalyzer:
             "files_with_matches": len(all_results),
             "matches": all_results
         }
+        
+    def _collect_supported_files(self, directory: str, file_filter: Optional[Callable[[Path], bool]] = None) -> List[str]:
+        """
+        Collect all supported files in a directory.
+        
+        Args:
+            directory: Directory to search
+            file_filter: Optional function to filter files (returns True to include)
+            
+        Returns:
+            List of file paths
+        """
+        files = []
+        
+        # Walk the directory tree and collect files
+        for root, _, filenames in os.walk(directory):
+            # Use list comprehension to build a list of files with supported extensions
+            files.extend(
+                str(file_path) for filename in filenames
+                if (file_path := Path(os.path.join(root, filename)))
+                and any(file_path.suffix.lower() in exts for exts in self.supported_languages.values())
+                and (file_filter is None or file_filter(file_path))
+            )
+            
+        return files

@@ -49,10 +49,24 @@ class PatternConfig:
     
     def __post_init__(self):
         """Validate configuration after initialization."""
-        if self.validation_strictness not in VALIDATION_STRICTNESS:
+        self._validate_enum_field("validation_strictness", VALIDATION_STRICTNESS)
+    
+    def _validate_enum_field(self, field_name: str, valid_values: List[str]) -> None:
+        """
+        Validate that a field has a valid enum value.
+        
+        Args:
+            field_name: Name of the field to validate
+            valid_values: List of valid values for the field
+        
+        Raises:
+            ValueError: If the field value is not in valid_values
+        """
+        field_value = getattr(self, field_name)
+        if field_value not in valid_values:
             raise ValueError(
-                f"Invalid validation strictness: {self.validation_strictness}. "
-                f"Valid options are: {', '.join(VALIDATION_STRICTNESS)}"
+                f"Invalid {field_name.replace('_', ' ')}: {field_value}. "
+                f"Valid options are: {', '.join(valid_values)}"
             )
 
 
@@ -97,10 +111,24 @@ class OutputConfig:
     
     def __post_init__(self):
         """Validate configuration after initialization."""
-        if self.format not in OUTPUT_FORMATS:
+        self._validate_enum_field("format", OUTPUT_FORMATS)
+    
+    def _validate_enum_field(self, field_name: str, valid_values: List[str]) -> None:
+        """
+        Validate that a field has a valid enum value.
+        
+        Args:
+            field_name: Name of the field to validate
+            valid_values: List of valid values for the field
+        
+        Raises:
+            ValueError: If the field value is not in valid_values
+        """
+        field_value = getattr(self, field_name)
+        if field_value not in valid_values:
             raise ValueError(
-                f"Invalid output format: {self.format}. "
-                f"Valid formats are: {', '.join(OUTPUT_FORMATS)}"
+                f"Invalid {field_name.replace('_', ' ')}: {field_value}. "
+                f"Valid options are: {', '.join(valid_values)}"
             )
 
 
@@ -125,10 +153,24 @@ class DiagnosticConfig:
     
     def __post_init__(self):
         """Validate configuration after initialization."""
-        if self.verbosity not in VERBOSITY_LEVELS:
+        self._validate_enum_field("verbosity", VERBOSITY_LEVELS)
+    
+    def _validate_enum_field(self, field_name: str, valid_values: List[str]) -> None:
+        """
+        Validate that a field has a valid enum value.
+        
+        Args:
+            field_name: Name of the field to validate
+            valid_values: List of valid values for the field
+        
+        Raises:
+            ValueError: If the field value is not in valid_values
+        """
+        field_value = getattr(self, field_name)
+        if field_value not in valid_values:
             raise ValueError(
-                f"Invalid verbosity level: {self.verbosity}. "
-                f"Valid levels are: {', '.join(VERBOSITY_LEVELS)}"
+                f"Invalid {field_name.replace('_', ' ')}: {field_value}. "
+                f"Valid options are: {', '.join(valid_values)}"
             )
 
 
@@ -175,6 +217,10 @@ class ServerConfig:
     
     def __post_init__(self):
         """Validate configuration after initialization."""
+        self._validate_port_range()
+    
+    def _validate_port_range(self) -> None:
+        """Validate that the port is within the valid range."""
         if self.port < 0 or self.port > 65535:
             raise ValueError(f"Invalid port number: {self.port}")
     

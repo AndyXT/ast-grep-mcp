@@ -30,14 +30,12 @@ def get_pattern_variants(pattern: str) -> List[str]:
     
     # Replace specific identifiers with wildcards
     var_pattern = re.compile(r'\$([A-Z_][A-Z0-9_]*)')
-    var_matches = list(var_pattern.finditer(pattern))
     
-    # If pattern has variables, create variants with wildcards
-    if var_matches:
-        for match in var_matches:
-            # Replace specific variables with generic wildcards
-            variant = pattern[:match.start()] + "$_" + pattern[match.end():]
-            variants.append(variant)
+    # Instead of converting to list upfront, iterate directly over the iterator
+    for match in var_pattern.finditer(pattern):
+        # Replace specific variables with generic wildcards
+        variant = pattern[:match.start()] + "$_" + pattern[match.end():]
+        variants.append(variant)
     
     # Remove specific variable names in triple-$ patterns
     triple_var_pattern = re.compile(r'\$\$\$([A-Z_][A-Z0-9_]*)')
@@ -200,11 +198,14 @@ def suggest_patterns(pattern: str, code: str, language: str) -> Dict[str, List[s
     # Get example patterns for this language
     handler = get_handler(language)
     if handler:
-        # Select a few representative examples
-        examples = list(handler.get_default_patterns().items())
+        # Get patterns directly without unnecessary conversion to list
+        pattern_items = handler.get_default_patterns().items()
         
-        # Get at most 3 examples spread across the examples list
-        if examples:
+        # Select a few representative examples
+        if pattern_items:
+            # Convert to list only when needed for indexing
+            examples = list(pattern_items) if len(pattern_items) > 3 else pattern_items
+            
             if len(examples) <= 3:
                 examples_sample = [item[1] for item in examples]
             else:
@@ -228,27 +229,26 @@ def build_suggestion_message(pattern: str, language: str, suggestions: Dict[str,
     Returns:
         Formatted message with suggestions
     """
-    message = [f"No matches found for pattern '{pattern}' in {language} code."]
+    # Start with the base message
+    base_message = f"No matches found for pattern '{pattern}' in {language} code."
     
-    if suggestions["variants"]:
-        message.append("\nDid you mean:")
-        for i, variant in enumerate(suggestions["variants"][:3], 1):
-            message.append(f"  {i}. {variant}")
+    # Create parts of the message using list comprehensions instead of appending
+    variant_lines = ["\nDid you mean:"] + [f"  {i}. {variant}" for i, variant in enumerate(suggestions["variants"][:3], 1)] if suggestions["variants"] else []
     
-    if suggestions["similar_patterns"]:
-        message.append("\nSimilar patterns from library:")
-        for i, pattern_desc in enumerate(suggestions["similar_patterns"][:3], 1):
-            message.append(f"  {i}. {pattern_desc}")
+    similar_pattern_lines = ["\nSimilar patterns from library:"] + [f"  {i}. {pattern_desc}" for i, pattern_desc in enumerate(suggestions["similar_patterns"][:3], 1)] if suggestions["similar_patterns"] else []
     
-    if suggestions["examples"]:
-        message.append("\nExample patterns for this language:")
-        for i, example in enumerate(suggestions["examples"][:3], 1):
-            message.append(f"  {i}. {example}")
+    example_lines = ["\nExample patterns for this language:"] + [f"  {i}. {example}" for i, example in enumerate(suggestions["examples"][:3], 1)] if suggestions["examples"] else []
     
-    message.append("\nPattern writing tips:")
-    message.append("  - Use $VAR to match a single expression/identifier")
-    message.append("  - Use $$$VAR to match multiple expressions/statements")
-    message.append("  - Make sure your pattern follows the language syntax")
-    message.append("  - Try matching smaller code fragments first")
+    # Tips section
+    tip_lines = [
+        "\nPattern writing tips:",
+        "  - Use $VAR to match a single expression/identifier",
+        "  - Use $$$VAR to match multiple expressions/statements",
+        "  - Make sure your pattern follows the language syntax",
+        "  - Try matching smaller code fragments first"
+    ]
     
-    return "\n".join(message) 
+    # Combine all message parts
+    message_parts = [base_message] + variant_lines + similar_pattern_lines + example_lines + tip_lines
+    
+    return "\n".join(message_parts) 

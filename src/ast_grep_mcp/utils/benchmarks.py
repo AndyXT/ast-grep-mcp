@@ -64,12 +64,21 @@ class Benchmark:
         """
         times = []
         results = []
-        for i in range(self.iterations):
-            logger.info(f"Running {label} - iteration {i+1}/{self.iterations}")
+        
+        # Prepare log messages once outside the loop
+        total_iterations = self.iterations
+        iteration_template = f"Running {label} - iteration {{current}}/{total_iterations}"
+        result_template = f"{label} - iteration {{current}}: {{elapsed:.4f}}s"
+        
+        for i in range(total_iterations):
+            current_iteration = i + 1
+            logger.info(iteration_template.format(current=current_iteration))
+            
             elapsed, result = self.measure(func, *args, **kwargs)
             times.append(elapsed)
             results.append(result)
-            logger.info(f"{label} - iteration {i+1}: {elapsed:.4f}s")
+            
+            logger.info(result_template.format(current=current_iteration, elapsed=elapsed))
         
         self.results[label] = times
         return times, results
@@ -136,7 +145,11 @@ class Benchmark:
         """Print benchmark results."""
         logger.info(f"=== {self.name} Benchmark Results ===")
         
-        for label, stats in self.get_stats().items():
+        # Calculate statistics once for all labels
+        stats_dict = self.get_stats()
+        
+        # Print results for each label using the pre-calculated stats
+        for label, stats in stats_dict.items():
             logger.info(f"{label}:")
             logger.info(f"  Min: {stats['min']:.4f}s")
             logger.info(f"  Max: {stats['max']:.4f}s")
@@ -385,8 +398,9 @@ def run_benchmarks(
             pattern_comparisons[batch_label] = comparison
             
             # Track best configuration
-            if comparison.get("speedup_ratio", 0) > best_speedup:
-                best_speedup = comparison["speedup_ratio"]
+            speedup_ratio = comparison.get("speedup_ratio", 0)
+            if speedup_ratio > best_speedup:
+                best_speedup = speedup_ratio
                 best_config = batch_label
         
         comparisons[pattern] = pattern_comparisons
@@ -399,8 +413,11 @@ def run_benchmarks(
         logger.info(f"Pattern: {pattern}")
         logger.info(f"  Best configuration: {best_config} with {best_speedup:.2f}x speedup")
         
+        # Log all configurations with their speedups
         for batch_label, comparison in pattern_comparisons.items():
-            logger.info(f"  {batch_label}: {comparison['speedup_ratio']:.2f}x speedup ({comparison['speedup_percentage']:.2f}%)")
+            speedup_ratio = comparison['speedup_ratio']
+            speedup_percentage = comparison['speedup_percentage']
+            logger.info(f"  {batch_label}: {speedup_ratio:.2f}x speedup ({speedup_percentage:.2f}%)")
     
     # Calculate overall best configuration
     avg_speedups = {}

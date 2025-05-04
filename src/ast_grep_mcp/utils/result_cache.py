@@ -6,11 +6,17 @@ This module provides LRU caching for code analysis and refactoring results.
 
 import functools
 import logging
-from typing import Dict, Any, Callable, TypeVar, cast
+from typing import Dict, Any, Callable, TypeVar, cast, NamedTuple
 import time
 
 # Type variable for decorated functions
 T = TypeVar('T')
+
+class CacheResult(NamedTuple):
+    """Results from a cache operation."""
+    result: Any
+    is_hit: bool
+    duration: float
 
 class ResultCache:
     """
@@ -59,6 +65,55 @@ class ResultCache:
             f"{stats['hit_ratio']:.2%} hit ratio, {stats['size']}/{stats['maxsize']} items"
         )
     
+    def _execute_cached_function(self, cached_func: Callable, *args, **kwargs) -> CacheResult:
+        """
+        Execute a cached function and track cache performance.
+        
+        Args:
+            cached_func: The cached function to execute
+            args: Positional arguments for the function
+            kwargs: Keyword arguments for the function
+            
+        Returns:
+            Tuple of (result, is_hit, duration)
+        """
+        start_time = time.time()
+        
+        # Get cache info before call
+        info_before = cached_func.cache_info()
+        
+        # Call the cached function
+        result = cached_func(*args, **kwargs)
+        
+        # Get cache info after call
+        info_after = cached_func.cache_info()
+        
+        # Determine if this was a cache hit
+        is_hit = info_after.hits > info_before.hits
+        duration = time.time() - start_time
+        
+        return CacheResult(result=result, is_hit=is_hit, duration=duration)
+    
+    def _update_cache_stats(self, func_name: str, cache_result: CacheResult, currsize: int) -> None:
+        """
+        Update cache statistics based on the cache operation result.
+        
+        Args:
+            func_name: Name of the cached function
+            cache_result: Result of the cache operation
+            currsize: Current size of the cache
+        """
+        # Update stats
+        if cache_result.is_hit:
+            self._cache_hits += 1
+            self.logger.debug(f"Cache hit for {func_name}")
+            self.logger.debug(f"Cache hit saved {cache_result.duration:.4f}s")
+        else:
+            self._cache_misses += 1
+            self.logger.debug(f"Cache miss for {func_name}")
+        
+        self._cache_size = currsize
+    
     def lru_cache(self, func: Callable[..., T]) -> Callable[..., T]:
         """
         Decorator to cache function results using LRU caching.
@@ -74,32 +129,13 @@ class ResultCache:
         
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            start_time = time.time()
+            # Execute function with cache tracking
+            cache_result = self._execute_cached_function(cached_func, *args, **kwargs)
             
-            # Get cache info before call
-            info_before = cached_func.cache_info()
+            # Update statistics
+            self._update_cache_stats(func.__name__, cache_result, cached_func.cache_info().currsize)
             
-            # Call the cached function
-            result = cached_func(*args, **kwargs)
-            
-            # Get cache info after call
-            info_after = cached_func.cache_info()
-            
-            # Update stats
-            if info_after.hits > info_before.hits:
-                self._cache_hits += 1
-                self.logger.debug(f"Cache hit for {func.__name__}")
-            else:
-                self._cache_misses += 1
-                self.logger.debug(f"Cache miss for {func.__name__}")
-            
-            self._cache_size = info_after.currsize
-            
-            # Log performance improvement if cache hit
-            if info_after.hits > info_before.hits:
-                self.logger.debug(f"Cache hit saved {time.time() - start_time:.4f}s")
-            
-            return result
+            return cache_result.result
         
         # Add cache_info accessor to the wrapper
         wrapper.cache_info = cached_func.cache_info  # type: ignore

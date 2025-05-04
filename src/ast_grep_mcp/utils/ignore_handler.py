@@ -43,13 +43,28 @@ class IgnorePattern:
         if not self._is_valid:
             return
         
+        # Process the pattern step by step
+        pattern = self._prepare_pattern()
+        pattern = self._convert_glob_to_regex(pattern)
+        pattern = self._anchor_pattern(pattern)
+        pattern = self._handle_directory_pattern(pattern)
+        
+        # Compile the regex
+        self._regex = re.compile(pattern)
+    
+    def _prepare_pattern(self) -> str:
+        """Prepare the pattern for conversion to regex."""
         pattern = self.pattern
         
         # Handle directory-specific pattern
         self.dir_only = pattern.endswith('/')
         if self.dir_only:
             pattern = pattern[:-1]
-        
+            
+        return pattern
+    
+    def _convert_glob_to_regex(self, pattern: str) -> str:
+        """Convert glob patterns to regex patterns."""
         # Escape special regex characters, but not * or ?
         pattern = re.escape(pattern).replace('\\*', '*').replace('\\?', '?')
         
@@ -57,18 +72,21 @@ class IgnorePattern:
         pattern = pattern.replace('*', '.*')
         pattern = pattern.replace('?', '.')
         
-        # Anchor the pattern based on whether it starts with /
+        return pattern
+    
+    def _anchor_pattern(self, pattern: str) -> str:
+        """Anchor the pattern based on whether it starts with /."""
         if pattern.startswith('/'):
-            pattern = f"^{pattern[1:]}"
+            return f"^{pattern[1:]}"
         else:
-            pattern = f"(^|/){pattern}"
-        
+            return f"(^|/){pattern}"
+    
+    def _handle_directory_pattern(self, pattern: str) -> str:
+        """Handle directory-specific pattern modifications."""
         # For directory patterns, we need to match all files/dirs inside too
         if self.dir_only:
-            pattern = f"{pattern}(/.*)?"
-        
-        # Compile the regex
-        self._regex = re.compile(pattern)
+            return f"{pattern}(/.*)?"
+        return pattern
     
     def matches(self, path: str) -> bool:
         """

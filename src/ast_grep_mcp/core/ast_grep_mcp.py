@@ -41,16 +41,11 @@ class AstGrepMCP:
         # Initialize ignore handler
         self.ignore_handler = self._setup_ignore_handler()
         
-        # Set cache size from config if available
-        if hasattr(self.config, 'cache_size') and self.config.cache_size is not None:
-            result_cache.maxsize = self.config.cache_size
-            self.logger.info("Setting result cache size to " + str(result_cache.maxsize))
+        # Configure cache settings
+        self._configure_cache()
         
         # Log security configuration
-        if self.config.safe_roots:
-            self.logger.info("File access restricted to: " + ', '.join(self.config.safe_roots))
-        else:
-            self.logger.warning("No safe roots configured. File access is unrestricted.")
+        self._log_security_config()
         
         # Register all tools
         self._register_tools()
@@ -88,6 +83,19 @@ class AstGrepMCP:
                     self.logger.warning(f"Failed to load ignore patterns from {ignore_file}")
         
         return ignore_handler
+    
+    def _configure_cache(self) -> None:
+        """Configure result cache settings based on config."""
+        if hasattr(self.config, 'cache_size') and self.config.cache_size is not None:
+            result_cache.maxsize = self.config.cache_size
+            self.logger.info("Setting result cache size to " + str(result_cache.maxsize))
+    
+    def _log_security_config(self) -> None:
+        """Log the current security configuration."""
+        if self.config.safe_roots:
+            self.logger.info("File access restricted to: " + ', '.join(self.config.safe_roots))
+        else:
+            self.logger.warning("No safe roots configured. File access is unrestricted.")
     
     def _register_tools(self) -> None:
         """Register all available tools with the MCP server."""

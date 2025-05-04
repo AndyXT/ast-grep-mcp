@@ -90,7 +90,7 @@ class TestServerConfig:
         # Invalid output format
         with pytest.raises(ValueError) as excinfo:
             ServerConfig(output_config=OutputConfig(format="invalid"))
-        assert "Invalid output format" in str(excinfo.value)
+        assert "Invalid format" in str(excinfo.value)
         
         # Invalid validation strictness
         with pytest.raises(ValueError) as excinfo:
@@ -100,7 +100,7 @@ class TestServerConfig:
         # Invalid verbosity
         with pytest.raises(ValueError) as excinfo:
             ServerConfig(diagnostic_config=DiagnosticConfig(verbosity="invalid"))
-        assert "Invalid verbosity level" in str(excinfo.value)
+        assert "Invalid verbosity" in str(excinfo.value)
     
     def test_to_dict(self):
         """Test converting configuration to a dictionary."""
