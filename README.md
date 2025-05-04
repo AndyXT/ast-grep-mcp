@@ -7,6 +7,8 @@ An MCP (Model-Check-Path) server that uses ast-grep for advanced code analysis a
 - AST-powered code analysis and search
 - Structural pattern matching on code
 - Support for multiple languages (Python, JavaScript, TypeScript, Lua, C, Rust, Go)
+- Comprehensive pattern libraries with 25+ patterns per language
+- Detection of anti-patterns, code smells, and security vulnerabilities
 - Code refactoring capabilities
 - LRU caching for improved performance
 - Parallel directory search with batching for large codebases
@@ -15,11 +17,12 @@ An MCP (Model-Check-Path) server that uses ast-grep for advanced code analysis a
 ## Prerequisites
 
 - Python 3.10 or higher
-- [UV](https://astral.sh/uv) package manager (recommended)
+- [UV](https://astral.sh/uv) package manager (strongly recommended)
 - Rust (required for ast-grep-py compilation)
 
 ## Installation
 
+### Option 1: From Source (Recommended)
 1. Clone this repository:
 
 ```bash
@@ -35,15 +38,32 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 uv sync
 ```
 
-3. Or install with pip (alternative):
+### Option 2: Install as a Package
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -e .
+# Install using UV (recommended)
+uv pip install ast-grep-mcp
+
+# Or install from the repository
+uv pip install git+https://github.com/yourorg/ast-grep-mcp.git
 ```
 
-4. Alternatively, use the helper script for a clean installation:
+### Option 3: Development Installation
+
+```bash
+# Clone repository
+git clone https://github.com/yourorg/ast-grep-mcp.git
+cd ast-grep-mcp
+
+# Install in development mode with UV
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+uv pip install -e .
+```
+
+### Helper Script
+
+Alternatively, use the helper script for a clean installation:
 
 ```bash
 ./scripts/install_deps.sh
@@ -53,34 +73,38 @@ pip install -e .
 
 ### Starting the MCP Server
 
-Start the server with default settings:
+After installing the package, you can use the provided commands:
 
 ```bash
-python main.py start
+# Using the console script
+ast-grep-mcp start
+
+# Using the Python module with UV
+uv run python -m ast-grep-mcp start
 ```
 
-Or use the legacy command:
+Or run directly from source with UV:
 
 ```bash
-python main.py serve
+uv run python main.py start
 ```
 
 Customize host, port and cache size:
 
 ```bash
-python main.py start --host 0.0.0.0 --port 9000 --cache-size 256
+uv run ast-grep-mcp start --host 0.0.0.0 --port 9000 --cache-size 256
 ```
 
 Configure logging:
 
 ```bash
-python main.py start --log-level debug --log-file ast-grep.log
+uv run ast-grep-mcp start --log-level debug --log-file ast-grep.log
 ```
 
 Use a configuration file (JSON or YAML):
 
 ```bash
-python main.py start --config config.json
+uv run ast-grep-mcp start --config config.json
 ```
 
 ### Interactive Mode
@@ -88,7 +112,7 @@ python main.py start --config config.json
 Test patterns and explore AST Grep functionality without starting a server:
 
 ```bash
-python main.py interactive
+uv run ast-grep-mcp interactive
 ```
 
 In interactive mode, you can:
@@ -102,7 +126,7 @@ In interactive mode, you can:
 ### View Version Information
 
 ```bash
-python main.py version
+uv run ast-grep-mcp version
 ```
 
 ### Performance Optimization
@@ -112,13 +136,14 @@ The server includes several performance optimizations:
 1. **LRU Cache**: Results are cached to avoid redundant pattern matching operations
 2. **Parallel Processing**: For large directories (>200 files), search can be parallelized
 3. **Batch Processing**: Files are processed in batches to optimize parallel execution
+4. **UV Execution**: Using UV for running Python commands provides additional performance benefits
 
 #### Running Benchmarks
 
 To find the optimal configuration for your workload and system, use the benchmark command:
 
 ```bash
-python main.py benchmark --num-files 300 --batch-sizes auto,5,10,20,50
+uv run ast-grep-mcp benchmark --num-files 300 --batch-sizes auto,5,10,20,50
 ```
 
 This will create synthetic test files, run both sequential and parallel searches, and provide recommendations for your specific environment.
@@ -144,6 +169,11 @@ To configure an AI assistant to use this MCP server, use the following configura
   }
 }
 ```
+
+This configuration uses UV to run the server, which offers:
+- Faster initialization time compared to directly running Python
+- Consistent dependency resolution
+- Isolated environment management
 
 ### Configuration File Example
 
@@ -219,6 +249,8 @@ console.log($$$ARGS)
 
 ## Pattern Examples
 
+For a comprehensive list of patterns for all supported languages, see the [Pattern Library](docs/pattern-library.md) documentation.
+
 ### Python Pattern Examples
 
 ```
@@ -258,38 +290,168 @@ console.log($$$ARGS)
 if ($CONDITION) { $$$BODY }
 ```
 
+### Rust Pattern Examples
+
+```
+# Find function definitions
+fn $NAME($$$PARAMS) -> $RET_TYPE
+
+# Find struct definitions
+struct $NAME { $$$FIELDS }
+
+# Find unsafe blocks
+unsafe { $$$CODE }
+
+# Find unwrap calls (potential issues)
+$EXPR.unwrap()
+
+# Find match expressions
+match $EXPR { $$$ARMS }
+```
+
+### Go Pattern Examples
+
+```
+# Find function definitions
+func $NAME($$$PARAMS) $$$RETURN_TYPE
+
+# Find interface definitions
+type $NAME interface { $$$METHODS }
+
+# Find goroutine launches
+go func() { $$$BODY }()
+
+# Find error checks
+if err != nil { $$$ERROR_HANDLING }
+
+# Find range loops
+for $KEY, $VALUE := range $COLLECTION { $$$BODY }
+```
+
+### C Pattern Examples
+
+```
+# Find function definitions
+$RET_TYPE $NAME($$$PARAMS)
+
+# Find struct definitions
+struct $NAME { $$$FIELDS }
+
+# Find potential buffer overflows
+strcpy($DEST, $SRC)
+
+# Find memory allocation without checks
+$PTR = malloc($SIZE)
+
+# Find switch statements
+switch ($EXPR) { $$$CASES }
+```
+
+## Language Support
+
+AST-grep-mcp supports the following languages with comprehensive pattern libraries:
+
+| Language | Patterns | File Extensions |
+|----------|----------|-----------------|
+| Python | 67 | .py |
+| JavaScript | 57 | .js, .jsx |
+| TypeScript | 94 | .ts, .tsx |
+| Rust | 36 | .rs |
+| Go | 36 | .go |
+| C | 36 | .c, .h |
+| Lua | Basic | .lua |
+
+Each language includes patterns for:
+- Basic code constructs
+- Anti-patterns and code smells
+- Performance optimization opportunities
+- Security vulnerabilities
+- Refactoring suggestions
+
+## Adding New Language Support
+
+The project includes a language handler generator script to easily add support for new languages:
+
+```bash
+uv run python scripts/new_language.py <language_name>
+```
+
+For example:
+```bash
+uv run python scripts/new_language.py kotlin
+```
+
+This will:
+1. Create a new language handler file
+2. Register it in the handlers registry
+3. Set up the basic pattern structure
+
+After generating the boilerplate, you'll need to:
+1. Complete the pattern library with language-specific patterns
+2. Add unit tests for the handler
+3. Add documentation examples
+
+For more details, see the [Adding Language Support](docs/adding-language-support.md) guide.
+
 ## Development
 
 ### Project Structure
 
 ```
 ast-grep-mcp/
+   docs/
+      implementation-plan.md  # Project roadmap and progress
+      pattern-library.md      # Comprehensive pattern documentation
+   scripts/
+      new_language.py         # New language handler generator
    src/
       ast_grep_mcp/
           __init__.py
+          __main__.py         # Module entry point
           ast_analyzer.py     # Core AST analysis functionality
           server.py           # MCP server implementation
           language_handlers/  # Language-specific modules
+              base.py         # Base handler class
+              python_handler.py
+              javascript_handler.py
+              c_handler.py
+              go_handler.py
+              rust_handler.py
           core/               # Core server functionality
-              ast_grep_mcp.py # Main server class
+              __init__.py     # AstGrepMCP class
               config.py       # Server configuration
           utils/              # Utility modules
               error_handling.py # Error handling utilities
               result_cache.py   # Caching implementation
               benchmarks.py     # Performance benchmarking
+   tests/
+      language_handlers/      # Tests for language handlers
+      core/                   # Tests for core functionality
    main.py                    # CLI entry point
    pyproject.toml             # Project configuration
    README.md                  # This file
 ```
 
-### Adding Support for New Languages
+### Why UV?
 
-1. Create a new handler in `src/ast_grep_mcp/language_handlers/`
-2. Register the handler in `src/ast_grep_mcp/language_handlers/__init__.py`
+We use UV for all package management and Python execution for several key benefits:
+
+1. **Speed**: UV is significantly faster than pip and conda for dependency resolution and installation
+2. **Reproducibility**: Precisely tracks dependencies for consistent environments
+3. **Integration**: Works seamlessly with Python's packaging ecosystem
+4. **Caching**: Efficient caching of dependencies and build artifacts
+5. **Performance**: Faster Python execution through optimized environment management
 
 ### Development Commands
 
 ```bash
+# Create and activate environment
+uv venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# Install all dependencies
+uv sync
+
 # Format code
 uv run black .
 
@@ -313,6 +475,12 @@ uv add package-name
 
 # Add dev dependency
 uv add --dev package-name
+
+# Update all dependencies
+uv pip sync --upgrade
+
+# Generate lock file
+uv pip freeze > requirements.lock
 ```
 
 ### Troubleshooting
