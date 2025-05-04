@@ -12,6 +12,10 @@ An MCP (Model-Check-Path) server that uses ast-grep for advanced code analysis a
 - Code refactoring capabilities
 - LRU caching for improved performance
 - Parallel directory search with batching for large codebases
+- Pattern suggestion system for helpful feedback when patterns don't match
+- Interactive pattern builder for step-by-step pattern creation
+- Comprehensive configuration system with YAML/JSON files, environment variables, and command-line options
+- `.ast-grepignore` support for excluding files and directories using gitignore-style patterns
 - Built with UV for blazing fast dependency management
 
 ## Prerequisites
@@ -123,6 +127,23 @@ In interactive mode, you can:
 - Refactor code with patterns and replacements
 - View example patterns for the current language
 
+### Interactive Pattern Builder
+
+Create and refine patterns with real-time feedback:
+
+```bash
+uv run ast-grep-mcp pattern-builder
+```
+
+The pattern builder helps you:
+- Build patterns step by step with immediate feedback
+- See live matches as you refine your pattern
+- Save patterns to your personal library
+- Explore pattern variants and alternatives
+- Test patterns against your code
+
+See [Pattern Suggestions Guide](docs/pattern-suggestions.md) for more details on these features.
+
 ### View Version Information
 
 ```bash
@@ -152,57 +173,108 @@ This will create synthetic test files, run both sequential and parallel searches
 
 ### MCP Server Configuration
 
-To configure an AI assistant to use this MCP server, use the following configuration:
+#### Configuration Files
 
-```json
-{
-  "mcpServers": {
-    "ast-grep": {
-      "command": "uv",
-      "args": [
-        "--directory", "/path/to/ast-grep-mcp",
-        "run", "python", "main.py", "start",
-        "--cache-size", "128"
-      ],
-      "env": {}
-    }
-  }
-}
-```
-
-This configuration uses UV to run the server, which offers:
-- Faster initialization time compared to directly running Python
-- Consistent dependency resolution
-- Isolated environment management
-
-### Configuration File Example
-
-Create a JSON configuration file:
-
-```json
-{
-  "host": "0.0.0.0",
-  "port": 9000,
-  "log_level": "info",
-  "log_file": "ast-grep.log",
-  "log_to_console": true,
-  "cache_size": 256,
-  "safe_roots": ["/path/to/safe/dir"]
-}
-```
-
-Or use YAML format:
+AST Grep MCP supports hierarchical configuration files in YAML or JSON format. Create a file named `ast-grep.yml` in your project directory:
 
 ```yaml
+# Server settings
 host: 0.0.0.0
 port: 9000
 log_level: info
 log_file: ast-grep.log
-log_to_console: true
+
+# Performance settings
+enable_cache: true
 cache_size: 256
+
+# Security settings
 safe_roots:
   - /path/to/safe/dir
+
+# Ignore configuration
+ignore_file: .ast-grepignore
+use_default_ignores: true
+ignore_patterns:
+  - "*.tmp"
+  - "*.bak"
+
+# Pattern configuration
+pattern_config:
+  template_dir: templates
+  validation_strictness: normal
+
+# Refactoring configuration
+refactoring_config:
+  preview_mode: true
+  validate_replacements: true
+  max_replacements: 1000
 ```
+
+Configuration files are discovered in the following order:
+1. Default configuration
+2. Project configuration file (ast-grep.yml in current or parent directory)
+3. User-specified configuration file (--config option)
+4. Environment variables
+5. Command-line arguments
+
+#### Configuration Using Environment Variables
+
+You can configure AST Grep MCP using environment variables:
+
+```bash
+# Set host and port
+export AST_GREP_HOST=0.0.0.0
+export AST_GREP_PORT=9000
+
+# Configure logging
+export AST_GREP_LOG_LEVEL=debug
+export AST_GREP_LOG_FILE=ast-grep.log
+
+# Set security restrictions
+export AST_GREP_SAFE_ROOTS=/path/to/project,/another/path
+
+# Configure ignore patterns
+export AST_GREP_IGNORE_FILE=.my-custom-ignore
+export AST_GREP_USE_DEFAULT_IGNORES=true
+
+# Start the server (will use environment variables)
+ast-grep-mcp start
+```
+
+See [Configuration Guide](docs/configuration.md) for the full list of environment variables.
+
+#### Ignoring Files and Directories
+
+Create a `.ast-grepignore` file in your project directory to exclude files and directories from analysis:
+
+```
+# Version control
+.git/
+.svn/
+
+# Build directories
+build/
+dist/
+target/
+
+# Dependencies
+node_modules/
+venv/
+.venv/
+
+# Cache and temporary files
+__pycache__/
+*.pyc
+*.swp
+.DS_Store
+```
+
+The ignore system works like `.gitignore` with support for:
+- Directory-specific patterns (ending with `/`)
+- Wildcard patterns with `*` and `?`
+- Negation patterns with `!` to include previously excluded files
+- Comments and empty lines
 
 ### Available MCP Tools
 

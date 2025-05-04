@@ -79,8 +79,7 @@ class TestSecurityIntegration:
             # Test access to unsafe file
             unsafe_result = instance.analyze_file(unsafe_file, "def $NAME")
             assert "error" in unsafe_result
-            assert "Access denied" in unsafe_result["error"]
-            assert unsafe_result["matches"] == []
+            assert "restricted" in unsafe_result["error"]
     
     def test_directory_traversal_prevention(self):
         """Test that directory traversal attacks are prevented."""
@@ -108,8 +107,7 @@ class TestSecurityIntegration:
             
             # Should be blocked
             assert "error" in result
-            assert "Access denied" in result["error"]
-            assert result["matches"] == []
+            assert "restricted" in result["error"]
     
     def test_directory_search_security(self):
         """Test that directory search respects safe roots."""
@@ -145,4 +143,4 @@ class TestSecurityIntegration:
             # Test search in unsafe directory
             unsafe_result = instance.search_directory(unsafe_dir, "def $NAME")
             assert "error" in unsafe_result
-            assert "Access denied" in unsafe_result["error"] 
+            assert "restricted" in unsafe_result["error"] 

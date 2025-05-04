@@ -1,5 +1,8 @@
 """
-Utility modules for the AST-Grep MCP server.
+Utility modules for ast-grep-mcp.
+
+This package contains various utility functions and classes
+used throughout the ast-grep-mcp codebase.
 """
 
 from .error_handling import handle_errors

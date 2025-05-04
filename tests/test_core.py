@@ -67,8 +67,8 @@ def test_init_registers_tools():
         # Initialize AstGrepMCP
         AstGrepMCP()
         
-        # Check that tool() was called exactly 6 times
-        assert mock_mcp_instance.tool.call_count == 6
+        # Check that tool() was called exactly 11 times
+        assert mock_mcp_instance.tool.call_count == 11
 
 
 def test_config_validation():
@@ -150,5 +150,5 @@ def test_tool_registration(mock_fastmcp):
         # Initialize AstGrepMCP
         AstGrepMCP()
         
-        # Check that tool() was called exactly 6 times
-        assert mock_fastmcp.tool.call_count == 6 
+        # Check that tool() was called exactly 11 times
+        assert mock_fastmcp.tool.call_count == 11 
