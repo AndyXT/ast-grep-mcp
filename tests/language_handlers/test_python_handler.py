@@ -1,4 +1,3 @@
-import pytest
 from src.ast_grep_mcp.language_handlers.python_handler import PythonHandler
 
 class TestPythonHandler:

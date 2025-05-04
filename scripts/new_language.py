@@ -9,7 +9,6 @@ Example:
     python scripts/new_language.py rust
 """
 
-import os
 import sys
 import re
 from pathlib import Path
@@ -205,10 +204,10 @@ def generate_handler(language_name: str) -> None:
         print(f"⚠️ {init_file} does not exist. Manual registration required.")
     
     print(f"\n🎉 Successfully generated handler for {language_name}!")
-    print(f"Next steps:")
+    print("Next steps:")
     print(f"1. Complete the pattern library in {handler_file}")
-    print(f"2. Add unit tests for the new handler")
-    print(f"3. Add documentation with examples for each pattern")
+    print("2. Add unit tests for the new handler")
+    print("3. Add documentation with examples for each pattern")
 
 def main():
     """Main entry point for the template generator script."""

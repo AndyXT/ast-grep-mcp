@@ -1,4 +1,3 @@
-import pytest
 from src.ast_grep_mcp.language_handlers.go_handler import GoHandler
 
 class TestGoHandler:
