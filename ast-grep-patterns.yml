@@ -1,0 +1,48 @@
+python:
+  # Anti-patterns we've fixed
+  global_variable: 
+    pattern: "global $NAME"
+    message: "Global variables make code harder to reason about and test"
+    category: "anti-pattern"
+    
+  long_function: 
+    pattern: "def $NAME($$$PARAMS):\n    $$$LONG_BODY"
+    message: "Long functions should be refactored into smaller ones"
+    category: "anti-pattern"
+    
+  nested_loops: 
+    pattern: "for $OUTER_VAR in $OUTER_ITER:\n    $$$FIRST_BODY\n    for $INNER_VAR in $INNER_ITER:\n        $$$SECOND_BODY"
+    message: "Nested loops can lead to quadratic time complexity"
+    category: "anti-pattern"
+  
+  # Performance issues we've fixed
+  list_in_loop:
+    pattern: "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)"
+    message: "Building lists with append() in loops is inefficient, use list comprehensions"
+    category: "performance"
+    
+  repeated_calculation:
+    pattern: "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)"
+    message: "Avoid repeated calculations in loops by moving invariant code outside"
+    category: "performance"
+    
+  unnecessary_list:
+    pattern: "list($GENERATOR)"
+    message: "Unnecessary conversion to list, use the iterator directly when possible"
+    category: "performance"
+    
+  # Proposed best practices
+  list_comprehension:
+    pattern: "[$EXPR for $VAR in $ITER]"
+    message: "Good use of list comprehension"
+    category: "best-practice"
+    
+  dictionary_comprehension:
+    pattern: "{$KEY: $VALUE for $VAR in $ITER}"
+    message: "Good use of dictionary comprehension"
+    category: "best-practice"
+    
+  generator_expression:
+    pattern: "($EXPR for $VAR in $ITER)"
+    message: "Good use of generator expression"
+    category: "best-practice" 
