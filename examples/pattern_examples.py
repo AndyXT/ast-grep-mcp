@@ -17,8 +17,8 @@ from src.ast_grep_mcp.ast_analyzer import AstAnalyzer
 from src.ast_grep_mcp.language_handlers import get_handler
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
-logger = logging.getLogger('pattern_examples')
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logger = logging.getLogger("pattern_examples")
 
 # Sample Python code
 PYTHON_CODE = """
@@ -90,11 +90,12 @@ const MyComponent = ({ name }) => {
 };
 """
 
+
 def test_pattern(code, language, pattern):
     """Test a pattern against code and print the results."""
     analyzer = AstAnalyzer()
     matches = analyzer.find_patterns(code, language, pattern)
-    
+
     if matches:
         logger.info(f"Pattern: '{pattern}' found {len(matches)} matches:")
         for i, match in enumerate(matches, 1):
@@ -105,15 +106,16 @@ def test_pattern(code, language, pattern):
     else:
         logger.warning(f"Pattern: '{pattern}' found NO matches.")
 
+
 def main():
     """Run pattern examples."""
     logger.info("AST-GREP-MCP PATTERN EXAMPLES")
     logger.info("============================")
-    
+
     # Show Python examples
     logger.info("\nPYTHON PATTERN EXAMPLES:")
     logger.info("------------------------")
-    
+
     python_patterns = [
         "def $NAME($$$PARAMS)",  # Function definition
         "def $NAME($$$PARAMS):\n    $$$BODY",  # Function with body
@@ -125,14 +127,14 @@ def main():
         "print($$$ARGS)",  # Print statement
         "try:\n    $$$BODY\nexcept $EXCEPTION:\n    $$$HANDLER",  # Try-except
     ]
-    
+
     for pattern in python_patterns:
         test_pattern(PYTHON_CODE, "python", pattern)
-    
+
     # Show JavaScript examples
     logger.info("\nJAVASCRIPT PATTERN EXAMPLES:")
     logger.info("--------------------------")
-    
+
     js_patterns = [
         "function $NAME($$$PARAMS) { $$$BODY }",  # Function definition
         "class $NAME { $$$BODY }",  # Class definition
@@ -143,18 +145,18 @@ def main():
         "try { $$$BODY } catch ($ERR) { $$$HANDLER }",  # Try-catch
         "<$TAG $$$PROPS>$$$CHILDREN</$TAG>",  # JSX element
     ]
-    
+
     for pattern in js_patterns:
         test_pattern(JAVASCRIPT_CODE, "javascript", pattern)
-    
+
     # Show how to get language-specific patterns
     logger.info("\nAVAILABLE PATTERNS FROM LANGUAGE HANDLERS:")
     logger.info("-----------------------------------------")
-    
+
     python_handler = get_handler("python")
     js_handler = get_handler("javascript")
     ts_handler = get_handler("typescript")
-    
+
     if python_handler:
         patterns = python_handler.get_default_patterns()
         logger.info(f"Python patterns available: {len(patterns)}")
@@ -162,7 +164,7 @@ def main():
             logger.info(f"  {name}: {pattern}")
         if len(patterns) > 5:
             logger.info(f"  ... and {len(patterns) - 5} more patterns")
-    
+
     if js_handler:
         patterns = js_handler.get_default_patterns()
         logger.info(f"JavaScript patterns available: {len(patterns)}")
@@ -170,15 +172,20 @@ def main():
             logger.info(f"  {name}: {pattern}")
         if len(patterns) > 5:
             logger.info(f"  ... and {len(patterns) - 5} more patterns")
-    
+
     if ts_handler:
         patterns = ts_handler.get_default_patterns()
-        ts_only = {k: v for k, v in patterns.items() if k not in js_handler.get_default_patterns()}
+        ts_only = {
+            k: v
+            for k, v in patterns.items()
+            if k not in js_handler.get_default_patterns()
+        }
         logger.info(f"TypeScript-specific patterns available: {len(ts_only)}")
         for name, pattern in list(ts_only.items())[:5]:
             logger.info(f"  {name}: {pattern}")
         if len(ts_only) > 5:
             logger.info(f"  ... and {len(ts_only) - 5} more patterns")
 
+
 if __name__ == "__main__":
-    main() 
+    main()

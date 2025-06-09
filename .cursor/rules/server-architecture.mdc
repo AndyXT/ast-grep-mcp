@@ -3,3 +3,38 @@ description:
 globs:
 alwaysApply: false
 ---
+# Server Architecture
+
+The ast-grep-mcp project follows a modular architecture for its MCP server implementation.
+
+## Core Components
+
+1. **FastMCP Server**
+   - Based on FastAPI
+   - Implements MCP (Model-Check-Path) protocol
+   - Defined in [src/ast_grep_mcp/server.py](mdc:src/ast_grep_mcp/server.py)
+
+2. **AstGrepMCP Class**
+   - Core class managing tool registration and execution
+   - Provides both functional and OOP interfaces
+   - Located in [src/ast_grep_mcp/core/__init__.py](mdc:src/ast_grep_mcp/core/__init__.py)
+
+3. **ServerConfig**
+   - Configuration dataclass for server settings
+   - Controls host, port, logging, and other options
+   - Found in [src/ast_grep_mcp/core/config.py](mdc:src/ast_grep_mcp/core/config.py)
+
+## Request Flow
+
+1. Client sends request to MCP server endpoint
+2. Server routes to appropriate tool handler
+3. Tool executes using AstAnalyzer and language handlers
+4. Response returned in standardized JSON format
+
+## CLI Integration
+
+The [main.py](mdc:main.py) script provides a Typer-based CLI for:
+
+- Starting the server (`serve` or `start` command)
+- Configuring server options
+- Checking version information

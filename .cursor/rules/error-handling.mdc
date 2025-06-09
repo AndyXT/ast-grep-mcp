@@ -3,3 +3,37 @@ description:
 globs:
 alwaysApply: false
 ---
+# Error Handling System
+
+The ast-grep-mcp uses a robust error handling system implemented in the `utils` package.
+
+## Error Handling Decorator
+
+The core of the system is the `handle_errors` decorator, which:
+
+1. Catches all exceptions raised by tool methods
+2. Returns a consistent `{"error": "error message"}` format for all failures
+3. Provides clear, actionable error messages
+4. Logs detailed error information for debugging
+
+## Pattern Syntax Errors
+
+Special handling is provided for pattern syntax errors, which:
+
+1. Detects invalid pattern syntax
+2. Provides language-specific examples of valid patterns
+3. Includes general pattern syntax guidelines
+
+## Error Types
+
+Common error types handled include:
+
+- Invalid language selection
+- Invalid pattern syntax
+- File not found errors
+- Permission errors
+- Parsing failures
+
+## Implementation
+
+The error handling system was implemented in Phase 2 of the project roadmap. See [docs/implementation-plan.md](mdc:docs/implementation-plan.md) for details.

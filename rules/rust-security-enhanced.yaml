@@ -1,0 +1,285 @@
+# Enhanced Rust Security Rules
+
+# Error Handling Issues
+- id: unwrap-usage
+  message: "Using unwrap() can cause panics - use proper error handling"
+  severity: error
+  language: rust
+  rule:
+    pattern: $EXPR.unwrap()
+  fix: |
+    match $EXPR {
+        Ok(val) => val,
+        Err(e) => {
+            // Handle error appropriately
+            return Err(e.into());
+        }
+    }
+  note: "Use ?, match, if let, or unwrap_or_else for proper error handling"
+
+- id: expect-usage
+  message: "Using expect() can cause panics - ensure the message is helpful"
+  severity: warning
+  language: rust
+  rule:
+    pattern: $EXPR.expect($MSG)
+  note: "Prefer proper error handling with ? or match. If expect() is necessary, ensure the message is descriptive"
+
+- id: panic-usage
+  message: "Avoid panic! in production code"
+  severity: error
+  language: rust
+  rule:
+    pattern: panic!($$$ARGS)
+  note: "Return Result<T, E> instead of panicking"
+
+- id: todo-macro
+  message: "TODO macro will panic at runtime"
+  severity: error
+  language: rust
+  rule:
+    pattern: todo!($$$ARGS)
+  note: "Implement the functionality or return an error"
+
+- id: unimplemented-macro
+  message: "unimplemented! macro will panic at runtime"
+  severity: error
+  language: rust
+  rule:
+    pattern: unimplemented!($$$ARGS)
+  note: "Implement the functionality or return an error"
+
+- id: unreachable-macro
+  message: "Ensure unreachable! is truly unreachable"
+  severity: warning
+  language: rust
+  rule:
+    pattern: unreachable!($$$ARGS)
+  note: "Verify that this code path is truly unreachable"
+
+# Memory Safety Issues
+- id: unsafe-block
+  message: "Unsafe block usage - requires careful review"
+  severity: warning
+  language: rust
+  rule:
+    pattern: unsafe { $$$BODY }
+  note: "Document safety invariants and ensure proper review"
+
+- id: unsafe-function
+  message: "Unsafe function declaration - document safety requirements"
+  severity: warning
+  language: rust
+  rule:
+    pattern: unsafe fn $NAME($$$PARAMS) $$$REST
+  note: "Document the safety requirements in the function documentation"
+
+- id: raw-pointer-deref
+  message: "Raw pointer dereference is unsafe"
+  severity: error
+  language: rust
+  rule:
+    pattern: "*$PTR"
+  note: "Ensure pointer is valid and properly aligned"
+
+- id: transmute-usage
+  message: "transmute is extremely unsafe - avoid if possible"
+  severity: error
+  language: rust
+  rule:
+    pattern: std::mem::transmute($$$ARGS)
+  note: "Use safe conversions like from_bits/to_bits or From/Into traits"
+
+- id: forget-usage
+  message: "mem::forget can cause resource leaks"
+  severity: warning
+  language: rust
+  rule:
+    pattern: std::mem::forget($EXPR)
+  note: "Consider using drop() or ManuallyDrop instead"
+
+# Concurrency Issues
+- id: data-race-potential
+  message: "Potential data race - ensure proper synchronization"
+  severity: warning
+  language: rust
+  rule:
+    pattern: |
+      static mut $NAME: $TYPE = $VALUE;
+  note: "Use synchronization primitives like Mutex, RwLock, or atomic types"
+
+- id: spawn-without-move
+  message: "Thread spawn without move - may not capture variables correctly"
+  severity: warning
+  language: rust
+  rule:
+    pattern: |
+      std::thread::spawn(|| {
+          $$$BODY
+      })
+  note: "Consider using move || to capture variables by value"
+
+# Security Vulnerabilities
+- id: command-injection
+  message: "Potential command injection vulnerability"
+  severity: error
+  language: rust
+  rule:
+    any:
+      - pattern: Command::new($USER_INPUT)
+      - pattern: |
+          let $CMD = Command::new($PROG);
+          $CMD.arg($USER_INPUT)
+  note: "Validate and sanitize user input before using in commands"
+
+- id: path-traversal
+  message: "Potential path traversal vulnerability"
+  severity: error
+  language: rust
+  rule:
+    any:
+      - pattern: std::fs::read($USER_INPUT)
+      - pattern: std::fs::File::open($USER_INPUT)
+      - pattern: std::fs::read_to_string($USER_INPUT)
+      - pattern: Path::new($USER_INPUT)
+  note: "Validate paths and use canonicalize() to prevent directory traversal"
+
+- id: sql-injection
+  message: "Potential SQL injection - use parameterized queries"
+  severity: error
+  language: rust
+  rule:
+    any:
+      - pattern: |
+          format!($$$SQL_START, $USER_INPUT, $$$SQL_END)
+      - pattern: |
+          $QUERY = format!($$$ARGS);
+          $$$
+          $DB.execute(&$QUERY, $$$)
+  note: "Use parameterized queries or prepared statements"
+
+# Cryptography Issues
+- id: weak-hash-md5
+  message: "MD5 is cryptographically broken - use SHA-256 or better"
+  severity: error
+  language: rust
+  rule:
+    any:
+      - pattern: md5::compute($$$)
+      - pattern: Md5::new()
+  note: "Use SHA-256, SHA-3, or BLAKE2 for cryptographic hashing"
+
+- id: weak-hash-sha1
+  message: "SHA-1 is deprecated for security - use SHA-256 or better"
+  severity: error
+  language: rust
+  rule:
+    any:
+      - pattern: sha1::Sha1::new()
+      - pattern: Sha1::digest($$$)
+  note: "Use SHA-256, SHA-3, or BLAKE2 for cryptographic hashing"
+
+- id: hardcoded-credentials
+  message: "Hardcoded credentials detected"
+  severity: error
+  language: rust
+  rule:
+    any:
+      - pattern: 'const $NAME: &str = "$$$KEY$$$"'
+        where:
+          $NAME: 
+            regex: "(?i)(password|secret|api_key|token|auth)"
+      - pattern: 'let $NAME = "$$$VALUE$$$"'
+        where:
+          $NAME:
+            regex: "(?i)(password|secret|api_key|token|auth)"
+  note: "Use environment variables or secure credential storage"
+
+# Resource Management
+- id: file-not-closed
+  message: "File handle may not be properly closed"
+  severity: warning
+  language: rust
+  rule:
+    pattern: |
+      let $FILE = File::open($PATH)?;
+      $$$BODY
+    not:
+      has: "$FILE.close()"
+  note: "File handles are automatically closed when dropped, but ensure proper error handling"
+
+- id: mutex-poisoning
+  message: "Mutex lock without handling poisoning"
+  severity: warning
+  language: rust
+  rule:
+    pattern: $MUTEX.lock().unwrap()
+  fix: |
+    match $MUTEX.lock() {
+        Ok(guard) => guard,
+        Err(poisoned) => poisoned.into_inner(),
+    }
+  note: "Handle mutex poisoning appropriately"
+
+# Common Antipatterns
+- id: clone-on-copy-type
+  message: "Unnecessary clone() on Copy type"
+  severity: info
+  language: rust
+  rule:
+    any:
+      - pattern: $VAR.clone()
+        where:
+          $VAR:
+            type: "i32|i64|u32|u64|f32|f64|bool|char"
+  note: "Copy types don't need clone()"
+
+- id: string-concatenation-loop
+  message: "Inefficient string concatenation in loop"
+  severity: warning
+  language: rust
+  rule:
+    pattern: |
+      for $ITEM in $ITER {
+          $$$BEFORE
+          $STRING = $STRING + $OTHER;
+          $$$AFTER
+      }
+  note: "Use String::push_str() or collect into String"
+
+- id: collect-vec-len
+  message: "Inefficient collect to Vec just for length"
+  severity: info
+  language: rust
+  rule:
+    pattern: $ITER.collect::<Vec<$TYPE>>().len()
+  fix: $ITER.count()
+  note: "Use count() instead of collecting to Vec"
+
+# Async-specific Issues
+- id: blocking-in-async
+  message: "Blocking operation in async context"
+  severity: warning
+  language: rust
+  rule:
+    any:
+      - pattern: std::thread::sleep($DURATION)
+        inside:
+          pattern: async fn $NAME($$$PARAMS) { $$$BODY }
+      - pattern: std::fs::read($PATH)
+        inside:
+          pattern: async fn $NAME($$$PARAMS) { $$$BODY }
+  note: "Use async alternatives like tokio::time::sleep or tokio::fs::read"
+
+- id: async-recursion
+  message: "Async recursion without boxing"
+  severity: error
+  language: rust
+  rule:
+    pattern: |
+      async fn $NAME($$$PARAMS) $$$RETURN {
+          $$$BEFORE
+          $NAME($$$ARGS).await
+          $$$AFTER
+      }
+  note: "Use Box::pin() for async recursion"

@@ -1,0 +1,48 @@
+# JavaScript Best Practices Rules
+
+- id: no-console-log
+  message: "Avoid using console.log in production code"
+  severity: warning
+  language: javascript
+  rule:
+    pattern: console.log($$$ARGS)
+  fix: "// console.log($$$ARGS) // TODO: Remove before production"
+  note: "Console logs should be removed or replaced with proper logging"
+
+- id: no-var-declaration
+  message: "Use const or let instead of var"
+  severity: error
+  language: javascript
+  rule:
+    pattern: var $NAME = $VALUE
+  fix: const $NAME = $VALUE
+  note: "var has function scope which can lead to bugs. Use const or let for block scope"
+
+- id: use-strict-equality
+  message: "Use === instead of == for comparisons"
+  severity: warning
+  language: javascript
+  rule:
+    pattern: $A == $B
+  fix: $A === $B
+  note: "Strict equality prevents type coercion bugs"
+
+- id: no-undefined-check-with-typeof
+  message: "Use typeof for undefined checks"
+  severity: info
+  language: javascript
+  rule:
+    pattern: $VAR === undefined
+  fix: typeof $VAR === 'undefined'
+  note: "typeof is safer for undefined checks"
+
+- id: prefer-const-for-unchanged-vars
+  message: "Variable {$NAME} is never reassigned, use const instead"
+  severity: hint
+  language: javascript
+  rule:
+    all:
+      - pattern: let $NAME = $VALUE
+      - not:
+          pattern: $NAME = $$$
+  fix: const $NAME = $VALUE

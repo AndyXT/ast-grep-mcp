@@ -3,3 +3,33 @@ description:
 globs:
 alwaysApply: false
 ---
+# MCP Tools
+
+The ast-grep-mcp provides these Model-Check-Path (MCP) tools:
+
+1. **analyze_code**: Finds pattern matches in provided code
+   ```python
+   analyze_code(code: str, language: str, pattern: str)
+   ```
+
+2. **refactor_code**: Replaces pattern matches with replacement code
+   ```python
+   refactor_code(code: str, language: str, pattern: str, replacement: str)
+   ```
+
+3. **analyze_file**: Analyzes patterns in a file on disk
+   ```python
+   analyze_file(file_path: str, pattern: str)
+   ```
+
+4. **get_language_patterns**: Returns common patterns for a specific language
+   ```python
+   get_language_patterns(language: str)
+   ```
+
+5. **get_supported_languages**: Lists all supported languages and file extensions
+   ```python
+   get_supported_languages()
+   ```
+
+These tools are defined in [src/ast_grep_mcp/server.py](mdc:src/ast_grep_mcp/server.py) and implemented in [src/ast_grep_mcp/core/__init__.py](mdc:src/ast_grep_mcp/core/__init__.py).

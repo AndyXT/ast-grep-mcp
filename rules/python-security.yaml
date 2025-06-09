@@ -1,0 +1,65 @@
+# Python Security Rules
+
+- id: no-eval
+  message: "Avoid using eval() as it can execute arbitrary code"
+  severity: error
+  language: python
+  rule:
+    pattern: eval($$$ARGS)
+  note: "eval() is a security risk. Use ast.literal_eval() for safe evaluation of literals"
+
+- id: no-exec
+  message: "Avoid using exec() as it can execute arbitrary code"
+  severity: error
+  language: python
+  rule:
+    pattern: exec($$$ARGS)
+  note: "exec() is a security risk. Consider safer alternatives"
+
+- id: no-pickle-load
+  message: "Pickle can execute arbitrary code during deserialization"
+  severity: error
+  language: python
+  rule:
+    any:
+      - pattern: pickle.load($$$ARGS)
+      - pattern: pickle.loads($$$ARGS)
+  note: "Use JSON or other safe serialization formats when possible"
+
+- id: sql-injection-risk
+  message: "Potential SQL injection vulnerability - use parameterized queries"
+  severity: error
+  language: python
+  rule:
+    any:
+      - pattern: $CURSOR.execute($QUERY % $$$ARGS)
+      - pattern: $CURSOR.execute($QUERY.format($$$ARGS))
+      - pattern: $CURSOR.execute(f"$$$QUERY")
+  note: "Use parameterized queries: cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))"
+
+- id: hardcoded-password
+  message: "Hardcoded password detected - use environment variables or secure storage"
+  severity: error
+  language: python
+  rule:
+    any:
+      - pattern: $VAR = "$$$password$$$"
+      - pattern: password = "$$$"
+      - pattern: PASSWORD = "$$$"
+  note: "Store passwords in environment variables or use a secure secrets management system"
+
+- id: insecure-random
+  message: "Use secrets module for cryptographic randomness"
+  severity: warning
+  language: python
+  rule:
+    any:
+      - pattern: random.random()
+      - pattern: random.randint($$$ARGS)
+      - pattern: random.choice($$$ARGS)
+    inside:
+      any:
+        - pattern: $$$token$$$
+        - pattern: $$$password$$$
+        - pattern: $$$secret$$$
+  note: "For security-sensitive operations, use the secrets module instead of random"

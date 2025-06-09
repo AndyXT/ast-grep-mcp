@@ -18,6 +18,16 @@ An MCP (Model-Check-Path) server that uses ast-grep for advanced code analysis a
 - `.ast-grepignore` support for excluding files and directories using gitignore-style patterns
 - Built with UV for blazing fast dependency management
 
+### New Features
+
+- **Enhanced Pattern Diagnostics**: Advanced error recovery with position tracking, language-specific validation, and intelligent error detection
+- **Automatic Pattern Correction**: Intelligent pattern correction suggestions with confidence scoring and automatic fixes for common mistakes
+- **Pattern Validation**: Comprehensive validation with detailed error messages, syntax checking, and language-specific rules
+- **Streaming Support**: Async streaming for large-scale operations with progress updates and batch processing
+- **Native Metavariable Extraction**: Uses ast-grep's native API for reliable metavariable capture instead of regex-based extraction
+- **Rule-Based Analysis**: Define and run complex rules with pattern composition, constraints, and YAML configuration
+- **Performance Optimizations**: Connection pooling infrastructure and optimized subprocess management
+
 ## Prerequisites
 
 - Python 3.10 or higher
@@ -286,6 +296,144 @@ This server exposes the following tools:
 4. `search_directory` - Search for patterns across all files in a directory
 5. `get_language_patterns` - Get common patterns for a language
 6. `get_supported_languages` - List supported languages
+7. `get_config` - Get current configuration
+8. `set_config` - Update configuration dynamically
+9. `generate_config` - Generate configuration file
+10. `preview_refactoring` - Preview refactoring changes without applying
+11. `validate_pattern` - Validate a pattern with detailed diagnostics
+12. `suggest_pattern_corrections` - Get automatic pattern correction suggestions
+13. `search_directory_stream` - Stream search results for large directories
+14. `create_rule` - Create a new analysis rule from a pattern
+15. `load_rules` - Load rules from YAML/JSON files
+16. `run_rules` - Run loaded rules against code
+17. `test_rule` - Test a rule configuration against sample code
+18. `compose_rule` - Create composite rules with logical operators
+19. `list_rules` - List all loaded rules
+20. `remove_rule` - Remove a rule from the engine
+21. `export_rules` - Export rules to YAML/JSON format
+
+## Using the New MCP Features
+
+### Rule-Based Analysis
+
+The new rule engine allows you to define and run complex code analysis rules:
+
+#### Loading Rules from Files
+
+```json
+{
+  "tool": "load_rules",
+  "arguments": {
+    "file_path": "rules/javascript-best-practices.yaml"
+  }
+}
+```
+
+#### Creating Custom Rules
+
+```json
+{
+  "tool": "create_rule",
+  "arguments": {
+    "rule_id": "no-eval",
+    "pattern": "eval($$$ARGS)",
+    "message": "Avoid using eval() as it can execute arbitrary code",
+    "language": "javascript",
+    "severity": "error",
+    "fix": "// eval($$$ARGS) // SECURITY: Do not use eval"
+  }
+}
+```
+
+#### Running Rules
+
+```json
+{
+  "tool": "run_rules",
+  "arguments": {
+    "code": "var x = eval('2 + 2'); console.log(x);",
+    "language": "javascript",
+    "severities": ["error", "warning"]
+  }
+}
+```
+
+#### Composite Rules
+
+Create complex rules with logical operators:
+
+```json
+{
+  "tool": "compose_rule",
+  "arguments": {
+    "rule_id": "unused-async",
+    "message": "Async function without await",
+    "sub_rules": [
+      {"pattern": "async function $NAME($$$PARAMS) { $$$BODY }"},
+      {"not": {"pattern": "await $$$"}}
+    ],
+    "operator": "all",
+    "language": "javascript",
+    "severity": "warning"
+  }
+}
+```
+
+### Pattern Validation and Diagnostics
+
+The new `validate_pattern` tool provides comprehensive pattern validation with detailed error messages:
+
+```json
+{
+  "tool": "validate_pattern",
+  "arguments": {
+    "pattern": "if CONDITION:",
+    "language": "python",
+    "code": "if x > 0:\n    print(x)"
+  }
+}
+```
+
+Response includes:
+- Syntax validation with error positions
+- Metavariable detection and suggestions
+- Language-specific rule violations
+- Automatic correction suggestions
+
+### Automatic Pattern Correction
+
+The `suggest_pattern_corrections` tool provides intelligent pattern corrections:
+
+```json
+{
+  "tool": "suggest_pattern_corrections",
+  "arguments": {
+    "pattern": "def NAME(PARAMS):",
+    "language": "python"
+  }
+}
+```
+
+Returns ranked suggestions with confidence scores and explanations for each fix.
+
+### Streaming Large Directory Searches
+
+For large codebases, use `search_directory_stream` to get results as they're found:
+
+```json
+{
+  "tool": "search_directory_stream",
+  "arguments": {
+    "directory": "/path/to/large/project",
+    "pattern": "$FUNC.unwrap()",
+    "language": "rust",
+    "stream_config": {
+      "batch_size": 50,
+      "include_progress": true
+    }
+  }
+}
+```
 
 ## Pattern Syntax Guide
 

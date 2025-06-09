@@ -1,19 +1,20 @@
 from .base import LanguageHandler
 from typing import List, Dict
 
+
 class JavaScriptHandler(LanguageHandler):
     @property
     def language_name(self) -> str:
         return "javascript"
-    
+
     @property
     def file_extensions(self) -> List[str]:
         return [".js", ".jsx"]
-    
+
     def get_default_patterns(self) -> Dict[str, str]:
         """
         Return default AST patterns for JavaScript.
-        
+
         Includes patterns for:
         - Common code constructs
         - Anti-patterns and code smells
@@ -48,7 +49,6 @@ class JavaScriptHandler(LanguageHandler):
             "spread_operator": "...$EXPR",
             "variable_declaration": "const $NAME = $VALUE",
             "arrow_function_simple": "$$$PARAMS => $EXPR",
-            
             # Anti-patterns and code smells
             "var_declaration": "var $NAME = $VALUE",
             "setTimeout_zero": "setTimeout($FUNC, 0)",
@@ -60,7 +60,6 @@ class JavaScriptHandler(LanguageHandler):
             "multiple_var_declarators": "var $NAME1 = $VAL1, $NAME2 = $VAL2",
             "double_equal": "$A == $B",
             "long_function": "function $NAME($$$PARAMS) { $$$LONG_BODY }",
-            
             # Performance optimizations
             "array_push_in_loop": "for ($$$INIT) { $ARR.push($ITEM) }",
             "inefficient_dom_query": "document.querySelectorAll($SELECTOR)",
@@ -68,7 +67,6 @@ class JavaScriptHandler(LanguageHandler):
             "innerHTML_in_loop": "for ($$$INIT) { $ELEM.innerHTML += $CONTENT }",
             "blocking_event_handler": "$ELEM.addEventListener('$EVENT', function() { $$$HEAVY_COMPUTATION })",
             "string_concat_plus": "$STR = $STR + $OTHER",
-            
             # Security vulnerabilities
             "eval_call": "eval($CODE)",
             "innerHTML_user_input": "$ELEM.innerHTML = $USER_INPUT",
@@ -77,7 +75,6 @@ class JavaScriptHandler(LanguageHandler):
             "dangerouslySetInnerHTML": "dangerouslySetInnerHTML={{ __html: $USER_INPUT }}",
             "sql_string_concatenation": "db.query('SELECT * FROM users WHERE id = ' + $USER_INPUT)",
             "dom_clobbering": "$ELEM.id = $USER_CONTROLLED_ID",
-            
             # Refactoring patterns
             "nested_if": "if ($COND1) { if ($COND2) { $$$BODY } }",
             "callback_to_promise": "$FUNC($$$ARGS, function($$$PARAMS) { $$$BODY })",
@@ -95,15 +92,15 @@ class TypeScriptHandler(LanguageHandler):
     @property
     def language_name(self) -> str:
         return "typescript"
-    
+
     @property
     def file_extensions(self) -> List[str]:
         return [".ts", ".tsx"]
-    
+
     def get_default_patterns(self) -> Dict[str, str]:
         """
         Return default AST patterns for TypeScript.
-        
+
         Includes all JavaScript patterns plus TypeScript-specific patterns.
         """
         # Include all JavaScript patterns and add TypeScript-specific ones
@@ -124,7 +121,6 @@ class TypeScriptHandler(LanguageHandler):
             "export_type": "export type $NAME = $TYPE",
             "namespace": "namespace $NAME { $$$BODY }",
             "decorated_class": "@$DECORATOR class $NAME { $$$BODY }",
-            
             # Anti-patterns and code smells
             "any_type": ": any",
             "non_null_assertion": "$EXPR!",
@@ -133,17 +129,14 @@ class TypeScriptHandler(LanguageHandler):
             "complex_intersection": "$TYPE1 & $TYPE2 & $TYPE3",
             "complex_union": "$TYPE1 | $TYPE2 | $TYPE3 | $TYPE4",
             "large_interface": "interface $NAME { $$$MANY_PROPS }",
-            
             # Performance optimizations
             "untyped_object_literal": "{ $$$PROPS } as $TYPE",
             "excessive_generics": "<$T1, $T2, $T3, $T4>",
             "redundant_casting": "$EXPR as $ITS_ACTUAL_TYPE",
-            
             # Security vulnerabilities
             "unsafe_any": "$FUNC($PARAM as any)",
             "definite_assignment": "$PROP!: $TYPE",
             "loose_object_literal": "const $OBJ: $TYPE = {}",
-            
             # Refactoring patterns
             "optional_chain": "$OBJ?.$PROP",
             "nullish_coalescing": "$EXPR ?? $DEFAULT",

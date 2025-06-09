@@ -1,6 +1,7 @@
 """
 Smoke tests for the ast-grep-mcp package.
 """
+
 import subprocess
 import sys
 from pathlib import Path
@@ -10,6 +11,7 @@ def test_imports():
     """Test that the package is importable."""
     try:
         import src.ast_grep_mcp
+
         assert src.ast_grep_mcp is not None
     except ImportError:
         assert False, "Failed to import ast_grep_mcp module"
@@ -24,4 +26,4 @@ def test_cli_help():
         text=True,
     )
     assert result.returncode == 0, f"CLI help command failed with: {result.stderr}"
-    assert "Start the AST Grep MCP server" in result.stdout 
+    assert "Start the AST Grep MCP server" in result.stdout

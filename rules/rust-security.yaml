@@ -1,0 +1,113 @@
+# Rust Security Rules
+
+- id: unsafe-block-usage
+  message: "Use of unsafe block detected - ensure this is necessary and properly reviewed"
+  severity: warning
+  language: rust
+  rule:
+    pattern: unsafe { $$$BODY }
+  note: "Unsafe blocks bypass Rust's memory safety guarantees. Document why it's necessary."
+
+- id: unwrap-without-check
+  message: "Using unwrap() can cause panics - consider using expect() or proper error handling"
+  severity: warning
+  language: rust
+  rule:
+    pattern: $EXPR.unwrap()
+  note: "Use match, if let, or ? operator for proper error handling"
+
+- id: sql-query-construction
+  message: "Potential SQL injection - use parameterized queries"
+  severity: error
+  language: rust
+  rule:
+    any:
+      - pattern: format!("$$$SQL$$$", $$$ARGS)
+      - pattern: |
+          $VAR = format!("$$$SQL$$$", $$$ARGS);
+          $$$
+          $CONN.execute(&$VAR, $$$)
+  note: "Use parameterized queries with placeholders"
+
+- id: hardcoded-secrets
+  message: "Hardcoded secret detected - use environment variables or secure storage"
+  severity: error
+  language: rust
+  rule:
+    any:
+      - pattern: 'const $NAME: &str = "$$$secret$$$"'
+      - pattern: let $NAME = "$$$password$$$"
+      - pattern: 'static $NAME: &str = "$$$key$$$"'
+  note: "Use environment variables or a secure secrets management system"
+
+- id: transmute-usage
+  message: "std::mem::transmute is extremely unsafe - ensure this is absolutely necessary"
+  severity: error
+  language: rust
+  rule:
+    pattern: std::mem::transmute($$$ARGS)
+  note: "transmute can violate memory safety. Consider safer alternatives like from_bits/to_bits"
+
+- id: unvalidated-input
+  message: "User input should be validated before use"
+  severity: warning
+  language: rust
+  rule:
+    any:
+      - pattern: |
+          std::io::stdin().read_line(&mut $VAR)?;
+          $$$
+          $VAR.parse()
+      - pattern: |
+          $REQ.body_string().await?;
+          $$$
+          serde_json::from_str(&$BODY)
+  note: "Validate and sanitize user input before processing"
+
+- id: panic-in-production
+  message: "Avoid panic! in production code - use proper error handling"
+  severity: warning
+  language: rust
+  rule:
+    any:
+      - pattern: panic!($$$MSG)
+      - pattern: unimplemented!()
+      - pattern: todo!()
+  note: "Return Result<T, E> instead of panicking in production code"
+
+- id: unchecked-arithmetic
+  message: "Unchecked arithmetic operations can overflow"
+  severity: warning
+  language: rust
+  rule:
+    any:
+      - pattern: $A + $B
+      - pattern: $A - $B
+      - pattern: $A * $B
+    inside:
+      pattern: |
+        #[cfg(not(debug_assertions))]
+        $$$BODY
+  note: "Use checked_add, checked_sub, checked_mul or wrapping operations"
+
+- id: path-traversal
+  message: "Potential path traversal vulnerability"
+  severity: error
+  language: rust
+  rule:
+    any:
+      - pattern: std::fs::read($USER_INPUT)
+      - pattern: std::fs::File::open($USER_INPUT)
+      - pattern: Path::new($USER_INPUT).join($$$)
+  note: "Validate and sanitize file paths to prevent directory traversal attacks"
+
+- id: weak-crypto
+  message: "Weak cryptographic algorithm detected"
+  severity: error
+  language: rust
+  rule:
+    any:
+      - pattern: md5::compute($$$)
+      - pattern: sha1::Sha1::new()
+      - pattern: Cipher::des($$$)
+  note: "Use strong cryptographic algorithms like SHA-256 or better"

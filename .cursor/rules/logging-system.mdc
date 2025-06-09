@@ -3,3 +3,38 @@ description:
 globs:
 alwaysApply: false
 ---
+# Logging System
+
+The ast-grep-mcp uses a configurable logging system to track operations, errors, and performance metrics.
+
+## Configuration Options
+
+The logging system supports these configuration options:
+
+- `log_level`: Sets verbosity (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+- `log_format`: Defines log message format
+- `log_file`: Path to write log output
+- `log_to_console`: Toggle for console output
+
+## Usage in Code
+
+Loggers are created using the configuration system:
+
+```python
+logger = config.setup_logging("ast_grep_mcp.module_name")
+logger.info("Operation completed successfully")
+logger.debug("Detailed information for debugging")
+logger.error("Error occurred: %s", error_message)
+```
+
+## CLI Control
+
+Logging can be controlled via CLI arguments:
+
+```bash
+python main.py serve --log-level=debug --log-file=app.log
+```
+
+## Implementation
+
+The logging system was implemented in Phase 3 of the project roadmap. See [docs/implementation-plan.md](mdc:docs/implementation-plan.md) for details.

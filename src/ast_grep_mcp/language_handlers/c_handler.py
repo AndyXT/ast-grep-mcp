@@ -5,19 +5,20 @@ C language handler for ast-grep.
 from typing import Dict, List
 from .base import LanguageHandler
 
+
 class CHandler(LanguageHandler):
     @property
     def language_name(self) -> str:
         return "c"
-        
+
     @property
     def file_extensions(self) -> List[str]:
         return [".c", ".h"]
-        
+
     def get_default_patterns(self) -> Dict[str, str]:
         """
         Return default AST patterns for C.
-        
+
         Includes patterns for:
         - Common code constructs
         - Anti-patterns and code smells
@@ -37,7 +38,6 @@ class CHandler(LanguageHandler):
             "macro": "#define $NAME($$$PARAMS) $BODY",
             "include": "#include $HEADER",
             "switch": "switch ($EXPR) { $$$CASES }",
-            
             # Anti-patterns and code smells
             "goto": "goto $LABEL;",
             "magic_number": "$EXPR $OP $NUMBER",
@@ -45,14 +45,12 @@ class CHandler(LanguageHandler):
             "large_function": "$RET_TYPE $NAME($$$PARAMS) { $$$LOTS_OF_CODE }",
             "global_var": "$TYPE $NAME = $VALUE;",
             "deeply_nested_loop": "for ($INIT1; $COND1; $POST1) { for ($INIT2; $COND2; $POST2) { $$$BODY } }",
-            
             # Performance optimizations
             "unnecessary_copy": "memcpy($DEST, $SRC, sizeof($TYPE))",
             "inefficient_string_concat": "strcat($DEST, $SRC)",
             "malloc_without_check": "$PTR = malloc($SIZE)",
             "repeated_array_element_access": "for ($I = 0; $I < $N; $I++) { $$$_; $ARRAY[$I]; $$$_ }",
             "redundant_condition": "if ($EXPR) { return 1; } else { return 0; }",
-            
             # Security vulnerabilities
             "buffer_overflow": "strcpy($DEST, $SRC)",
             "format_string_vulnerability": "printf($USER_INPUT)",
@@ -60,7 +58,6 @@ class CHandler(LanguageHandler):
             "integer_overflow": "$SMALL_TYPE $VAR = $LARGE_TYPE_EXPR",
             "null_pointer_deref": "*$PTR",
             "use_after_free": "free($PTR); $$$_; *$PTR",
-            
             # Refactoring patterns
             "if_return_pattern": "if ($COND) { return $TRUE_VAL; } return $FALSE_VAL;",
             "void_parameter": "$RET_TYPE $NAME(void)",

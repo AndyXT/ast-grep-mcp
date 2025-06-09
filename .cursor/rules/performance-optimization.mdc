@@ -3,3 +3,26 @@ description:
 globs:
 alwaysApply: false
 ---
+# Performance Optimization
+
+The ast-grep-mcp project includes planned performance optimizations for handling large codebases.
+
+## Planned Optimizations (Phase 4)
+
+1. **LRU Cache**
+   - `ResultCache` class for in-memory caching of search results
+   - Configurable cache size with expiration policy
+   - Cache hit ratio metrics in logs
+
+2. **Parallel Processing**
+   - Multi-processing for directory searches
+   - Worker pool for handling large file sets
+   - Automatic scaling based on system capabilities
+
+3. **Benchmarking**
+   - Performance tests using pytest-bench
+   - Target of ≥20% speed improvement on large codebases
+
+## Implementation Status
+
+These optimizations are scheduled for Phase 4 in the project roadmap. See [docs/implementation-plan.md](mdc:docs/implementation-plan.md) for current status and implementation details.

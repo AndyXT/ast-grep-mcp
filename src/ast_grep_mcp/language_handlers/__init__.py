@@ -12,7 +12,7 @@ handler_classes = [
     TypeScriptHandler,
     RustHandler,
     CHandler,
-    GoHandler
+    GoHandler,
 ]
 
 # Register all language handlers
@@ -26,9 +26,11 @@ for handler_class in handler_classes:
     # Add to handlers dictionary with the string as key
     handlers[language_name] = handler_instance
 
+
 def get_handler(language: str) -> LanguageHandler:
     """Get a handler for the specified language"""
     return handlers.get(language)
+
 
 def get_all_handlers() -> dict:
     """Get a dictionary of all registered handlers"""

@@ -1,6 +1,7 @@
 """
 Tests for the server module.
 """
+
 from unittest.mock import patch, MagicMock
 import tempfile
 from src.ast_grep_mcp.server import (
@@ -9,7 +10,7 @@ from src.ast_grep_mcp.server import (
     analyze_file,
     get_language_patterns,
     get_supported_languages,
-    run_server
+    run_server,
 )
 
 
@@ -110,27 +111,27 @@ def test_analyze_file_valid():
         assert len(result["matches"]) == 1
 
 
-@patch('src.ast_grep_mcp.server._get_ast_grep_mcp')
+@patch("src.ast_grep_mcp.server._get_ast_grep_mcp")
 def test_get_language_patterns_supported(mock_get_ast_grep_mcp):
     """Test get_language_patterns with a supported language."""
     # Mock the AstGrepMCP instance
     mock_instance = MagicMock()
     mock_instance.get_language_patterns.return_value = {
         "language": "python",
-        "patterns": {"function": "def $NAME()"}
+        "patterns": {"function": "def $NAME()"},
     }
     mock_get_ast_grep_mcp.return_value = mock_instance
-    
+
     # Call the function to test
     result = get_language_patterns("python")
-    
+
     # Verify the result
     assert "language" in result
     assert "patterns" in result
     assert result["language"] == "python"
     assert isinstance(result["patterns"], dict)
     assert "function" in result["patterns"]
-    
+
     # Verify the mock was called correctly
     mock_get_ast_grep_mcp.assert_called_once()
     mock_instance.get_language_patterns.assert_called_once_with("python")
@@ -155,9 +156,9 @@ def test_get_supported_languages():
     assert "javascript" in result["languages"]
 
 
-@patch('src.ast_grep_mcp.core.ast_grep_mcp.FastMCP')
-@patch('src.ast_grep_mcp.server.ServerConfig')
-@patch('src.ast_grep_mcp.server.AstGrepMCP')
+@patch("src.ast_grep_mcp.core.ast_grep_mcp.FastMCP")
+@patch("src.ast_grep_mcp.server.ServerConfig")
+@patch("src.ast_grep_mcp.server.AstGrepMCP")
 def test_run_server(mock_ast_grep_mcp_class, mock_server_config, mock_fastmcp):
     """Test run_server function."""
     # Set up mocks
@@ -165,11 +166,11 @@ def test_run_server(mock_ast_grep_mcp_class, mock_server_config, mock_fastmcp):
     mock_ast_grep_mcp_class.return_value = mock_instance
     mock_config = MagicMock()
     mock_server_config.return_value = mock_config
-    
+
     # Run the function
     run_server(host="0.0.0.0", port=9000)
-    
+
     # Check that the mocks were called correctly
     mock_server_config.assert_called_once_with(host="0.0.0.0", port=9000)
     mock_ast_grep_mcp_class.assert_called_once_with(mock_config)
-    mock_instance.start.assert_called_once() 
+    mock_instance.start.assert_called_once()

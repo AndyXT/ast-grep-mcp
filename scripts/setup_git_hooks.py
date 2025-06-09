@@ -9,10 +9,10 @@ import stat
 from pathlib import Path
 
 # Path to the Git hooks directory
-HOOKS_DIR = '.git/hooks'
+HOOKS_DIR = ".git/hooks"
 
 # Pre-commit hook content - use raw string to avoid escape sequence issues
-PRE_COMMIT_HOOK = r'''#!/bin/sh
+PRE_COMMIT_HOOK = r"""#!/bin/sh
 # AST-Grep pre-commit hook
 # Analyzes changed Python files using AST-Grep patterns
 
@@ -104,32 +104,41 @@ fi
 
 echo "AST-Grep analysis passed."
 exit 0
-'''
+"""
+
 
 def setup_git_hooks():
     """Set up Git pre-commit hooks for AST-Grep."""
     # Check if the .git directory exists
-    if not os.path.isdir('.git'):
-        print("Error: Not a Git repository. Please run this script from the repository root.")
+    if not os.path.isdir(".git"):
+        print(
+            "Error: Not a Git repository. Please run this script from the repository root."
+        )
         return False
-    
+
     # Create hooks directory if it doesn't exist
     hooks_dir = Path(HOOKS_DIR)
     hooks_dir.mkdir(exist_ok=True)
-    
+
     # Write pre-commit hook
-    pre_commit_path = hooks_dir / 'pre-commit'
-    with open(pre_commit_path, 'w') as f:
+    pre_commit_path = hooks_dir / "pre-commit"
+    with open(pre_commit_path, "w") as f:
         f.write(PRE_COMMIT_HOOK)
-    
+
     # Make the hook executable
-    os.chmod(pre_commit_path, os.stat(pre_commit_path).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-    
+    os.chmod(
+        pre_commit_path,
+        os.stat(pre_commit_path).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH,
+    )
+
     print(f"Git pre-commit hook installed at {pre_commit_path}")
-    print("The hook will check your Python files for critical code smells before each commit.")
-    
+    print(
+        "The hook will check your Python files for critical code smells before each commit."
+    )
+
     return True
+
 
 if __name__ == "__main__":
     if not setup_git_hooks():
-        sys.exit(1) 
+        sys.exit(1)

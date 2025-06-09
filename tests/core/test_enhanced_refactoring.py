@@ -35,7 +35,7 @@ def analyzer():
 
 class TestEnhancedRefactoring:
     """Tests for the enhanced refactoring functionality."""
-    
+
     def test_partial_match_detection(self, analyzer):
         """Test detection of partial matches in promise chains."""
         code = """
@@ -49,10 +49,12 @@ class TestEnhancedRefactoring:
         # Pattern that only matches part of the chain
         pattern = "fetch($URL).then($HANDLER)"
         replacement = "await fetch($URL)"
-        
+
         # With enhance_partial enabled, the refactoring should be prevented
-        refactored = analyzer.apply_refactoring(code, "javascript", pattern, replacement, enhance_partial=True)
-        
+        refactored = analyzer.apply_refactoring(
+            code, "javascript", pattern, replacement, enhance_partial=True
+        )
+
         # Should return original code unchanged
         assert refactored == code
 
@@ -62,28 +64,28 @@ class TestEnhancedRefactoring:
         code = "print('test')"
         pattern = "print($MSG)"
         replacement = "console.log($MSG)"
-        
+
         result = ast_grep_mcp.refactor_code(code, "python", pattern, replacement)
-        
+
         # Check that the key refactoring fields are present
         assert "success" in result
         assert "original_code" in result
         assert "refactored_code" in result
-        
+
         # The success value might be True or False depending on the implementation
         # but the refactored_code field should be present regardless
         if result["success"]:
             assert "console.log" in result["refactored_code"]
-    
+
     def test_preview_functionality(self, ast_grep_mcp):
         """Test the preview functionality basics."""
         code = "print('hello')"
         pattern = "print($MSG)"
         replacement = "console.log($MSG)"
-        
+
         result = ast_grep_mcp.preview_refactoring(code, "python", pattern, replacement)
-        
+
         # Check that we get a valid response
         assert "matches" in result
         # Preview might be present or we might get pattern diagnostics
-        assert "preview" in result or "error" in result 
+        assert "preview" in result or "error" in result

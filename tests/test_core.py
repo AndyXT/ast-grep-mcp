@@ -1,6 +1,7 @@
 """
 Tests for the core module.
 """
+
 import pytest
 from unittest.mock import patch, MagicMock
 import logging
@@ -14,10 +15,12 @@ def ast_grep_mcp():
         # Set up the mock
         mock_mcp_instance = MagicMock()
         mock_tool_decorator = MagicMock()
-        mock_tool_decorator.return_value = lambda x: x  # Identity function to keep the methods
+        mock_tool_decorator.return_value = (
+            lambda x: x
+        )  # Identity function to keep the methods
         mock_mcp_instance.tool.return_value = mock_tool_decorator
         mock_fastmcp.return_value = mock_mcp_instance
-        
+
         # Create and return an instance
         instance = AstGrepMCP()
         yield instance
@@ -38,7 +41,7 @@ def test_init(ast_grep_mcp):
     # Test with default config
     assert ast_grep_mcp.config.host == "localhost"
     assert ast_grep_mcp.config.port == 8080
-    
+
     # Test with custom config
     with patch("src.ast_grep_mcp.core.ast_grep_mcp.FastMCP") as mock_fastmcp:
         # Set up the mock
@@ -47,7 +50,7 @@ def test_init(ast_grep_mcp):
         mock_tool_decorator.return_value = lambda x: x
         mock_mcp_instance.tool.return_value = mock_tool_decorator
         mock_fastmcp.return_value = mock_mcp_instance
-        
+
         config = ServerConfig(host="0.0.0.0", port=9000)
         server = AstGrepMCP(config)
         assert server.config.host == "0.0.0.0"
@@ -60,15 +63,17 @@ def test_init_registers_tools():
         # Set up the mock
         mock_mcp_instance = MagicMock()
         mock_tool_decorator = MagicMock()
-        mock_tool_decorator.return_value = lambda x: x  # Identity function to keep the methods
+        mock_tool_decorator.return_value = (
+            lambda x: x
+        )  # Identity function to keep the methods
         mock_mcp_instance.tool.return_value = mock_tool_decorator
         mock_fastmcp.return_value = mock_mcp_instance
-        
+
         # Initialize AstGrepMCP
         AstGrepMCP()
-        
-        # Check that tool() was called exactly 11 times
-        assert mock_mcp_instance.tool.call_count == 11
+
+        # Check that tool() was called exactly 38 times
+        assert mock_mcp_instance.tool.call_count == 38
 
 
 def test_config_validation():
@@ -76,11 +81,11 @@ def test_config_validation():
     # Valid port should work
     config = ServerConfig(port=8080)
     assert config.port == 8080
-    
+
     # Invalid port should raise ValueError
     with pytest.raises(ValueError):
         ServerConfig(port=-1)
-    
+
     with pytest.raises(ValueError):
         ServerConfig(port=70000)
 
@@ -94,7 +99,7 @@ def test_setup_logger():
         mock_tool_decorator.return_value = lambda x: x
         mock_mcp_instance.tool.return_value = mock_tool_decorator
         mock_fastmcp.return_value = mock_mcp_instance
-        
+
         # Test with custom log level
         config = ServerConfig(log_level=logging.DEBUG)
         server = AstGrepMCP(config)
@@ -107,14 +112,16 @@ def test_start(mock_fastmcp):
     # Set up the mock
     mock_mcp_instance = MagicMock()
     mock_tool_decorator = MagicMock()
-    mock_tool_decorator.return_value = lambda x: x  # Identity function to keep the methods
+    mock_tool_decorator.return_value = (
+        lambda x: x
+    )  # Identity function to keep the methods
     mock_mcp_instance.tool.return_value = mock_tool_decorator
     mock_fastmcp.return_value = mock_mcp_instance
-    
+
     # Initialize and start the server
     server = AstGrepMCP()
     server.start()
-    
+
     # Check that run was called once
     mock_mcp_instance.run.assert_called_once()
 
@@ -125,30 +132,32 @@ def test_start_with_custom_host_port(mock_fastmcp):
     # Set up the mock
     mock_mcp_instance = MagicMock()
     mock_tool_decorator = MagicMock()
-    mock_tool_decorator.return_value = lambda x: x  # Identity function to keep the methods
+    mock_tool_decorator.return_value = (
+        lambda x: x
+    )  # Identity function to keep the methods
     mock_mcp_instance.tool.return_value = mock_tool_decorator
     mock_fastmcp.return_value = mock_mcp_instance
-    
+
     # Initialize and start the server with custom host and port
     config = ServerConfig(host="0.0.0.0", port=9000)
     server = AstGrepMCP(config)
-    
+
     # Capture logs to check for warning
     with patch.object(server.logger, "warning") as mock_warning:
         server.start()
-        
+
         # Should log a warning about FastMCP ignoring host and port
         mock_warning.assert_called_once()
-    
+
     # Check that run was called once
     mock_mcp_instance.run.assert_called_once()
 
 
 def test_tool_registration(mock_fastmcp):
     """Test that each tool is registered correctly."""
-    with patch('src.ast_grep_mcp.core.ast_grep_mcp.FastMCP', return_value=mock_fastmcp):
+    with patch("src.ast_grep_mcp.core.ast_grep_mcp.FastMCP", return_value=mock_fastmcp):
         # Initialize AstGrepMCP
         AstGrepMCP()
-        
-        # Check that tool() was called exactly 11 times
-        assert mock_fastmcp.tool.call_count == 11 
+
+        # Check that tool() was called exactly 38 times
+        assert mock_fastmcp.tool.call_count == 38

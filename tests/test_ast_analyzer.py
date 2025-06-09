@@ -1,6 +1,7 @@
 """
 Tests for the AstAnalyzer class.
 """
+
 import pytest
 from src.ast_grep_mcp.ast_analyzer import AstAnalyzer
 
@@ -76,8 +77,8 @@ def test_apply_refactoring_valid(analyzer):
     pattern = "def $FUNC_NAME(): pass"
     replacement = "def $FUNC_NAME():\n    print('Hello')"
     refactored = analyzer.apply_refactoring(code, "python", pattern, replacement)
-    
-    # The actual output seems to be different from expected - the refactoring engine 
+
+    # The actual output seems to be different from expected - the refactoring engine
     # might not be substituting the captured parameters as expected
     # Let's verify that:
     # 1. The refactored code is different from the original
@@ -100,5 +101,7 @@ def test_apply_refactoring_invalid_language(analyzer):
     code = "def hello(): pass"
     pattern = "def $FUNC_NAME(): pass"
     replacement = "def $FUNC_NAME():\n    print('Hello')"
-    refactored = analyzer.apply_refactoring(code, "invalid_language", pattern, replacement)
-    assert refactored == code  # No changes, returns original 
+    refactored = analyzer.apply_refactoring(
+        code, "invalid_language", pattern, replacement
+    )
+    assert refactored == code  # No changes, returns original

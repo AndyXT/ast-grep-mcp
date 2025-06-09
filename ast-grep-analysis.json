@@ -1,0 +1,461 @@
+[
+  {
+    "file": "src/ast_grep_mcp/server.py",
+    "pattern_name": "global_statement",
+    "pattern": "global $NAME",
+    "category": "anti-pattern",
+    "line": 23,
+    "column": 5,
+    "text": "global _ast_grep_mcp_instance"
+  },
+  {
+    "file": "src/ast_grep_mcp/server.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 101,
+    "column": 1,
+    "text": "def run_server(host: str = \"localhost\", port: int = 8080):\n    \"\"\"Run the MCP server\"\"\"\n    # Create a configuration with the provided host and port\n    config = ServerConfig(host=host, port=port)\n    \n    # Create an instance with this configuration and start it\n    instance = AstGrepMCP(config)\n    instance.start()"
+  },
+  {
+    "file": "src/ast_grep_mcp/ast_analyzer.py",
+    "pattern_name": "nested_loops",
+    "pattern": "for $OUTER_VAR in $OUTER_ITER:\n    for $INNER_VAR in $INNER_ITER:\n        $$$BODY",
+    "category": "anti-pattern",
+    "line": 845,
+    "column": 9,
+    "text": "for root, _, filenames in os.walk(directory):\n            for filename in filenames:\n                file_path = Path(os.path.join(root, filename))\n                extension = file_path.suffix.lower()\n                \n                # Check if file has a supported extension\n                is_supported = any(\n                    extension in exts for exts in self.supported_languages.values()\n                )\n                \n                # Apply custom filter if provided\n                if is_supported and (file_filter is None or file_filter(file_path)):\n                    files.append(str(file_path))"
+  },
+  {
+    "file": "src/ast_grep_mcp/ast_analyzer.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 23,
+    "column": 5,
+    "text": "def __init__(self):\n        self.supported_languages = {\n            \"python\": [\".py\"],\n            \"lua\": [\".lua\"],\n            \"c\": [\".c\", \".h\"],\n            \"rust\": [\".rs\"],\n            \"go\": [\".go\"],\n            \"javascript\": [\".js\", \".jsx\"],\n            \"typescript\": [\".ts\", \".tsx\"],\n        }\n        self.logger = logging.getLogger(\"ast_grep_mcp.analyzer\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/__main__.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 21,
+    "column": 1,
+    "text": "def main_entry_point():\n    \"\"\"\n    Entry point for the console script defined in pyproject.toml.\n    This function is called when the tool is run as \"ast-grep-mcp\" from the command line.\n    \"\"\"\n    return main_module.main()"
+  },
+  {
+    "file": "src/ast_grep_mcp/core/config.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 50,
+    "column": 5,
+    "text": "def __post_init__(self):\n        \"\"\"Validate configuration after initialization.\"\"\"\n        if self.validation_strictness not in VALIDATION_STRICTNESS:\n            raise ValueError(\n                f\"Invalid validation strictness: {self.validation_strictness}. \"\n                f\"Valid options are: {', '.join(VALIDATION_STRICTNESS)}\"\n            )"
+  },
+  {
+    "file": "src/ast_grep_mcp/core/config.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 98,
+    "column": 5,
+    "text": "def __post_init__(self):\n        \"\"\"Validate configuration after initialization.\"\"\"\n        if self.format not in OUTPUT_FORMATS:\n            raise ValueError(\n                f\"Invalid output format: {self.format}. \"\n                f\"Valid formats are: {', '.join(OUTPUT_FORMATS)}\"\n            )"
+  },
+  {
+    "file": "src/ast_grep_mcp/core/config.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 126,
+    "column": 5,
+    "text": "def __post_init__(self):\n        \"\"\"Validate configuration after initialization.\"\"\"\n        if self.verbosity not in VERBOSITY_LEVELS:\n            raise ValueError(\n                f\"Invalid verbosity level: {self.verbosity}. \"\n                f\"Valid levels are: {', '.join(VERBOSITY_LEVELS)}\"\n            )"
+  },
+  {
+    "file": "src/ast_grep_mcp/core/config.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 176,
+    "column": 5,
+    "text": "def __post_init__(self):\n        \"\"\"Validate configuration after initialization.\"\"\"\n        if self.port < 0 or self.port > 65535:\n            raise ValueError(f\"Invalid port number: {self.port}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/core/ast_grep_mcp.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 28,
+    "column": 5,
+    "text": "def __init__(self, config: Optional[ServerConfig] = None):\n        \"\"\"\n        Initialize the AstGrepMCP server.\n        \n        Args:\n            config: Server configuration. If None, default configuration is used.\n        \"\"\"\n        # If config is None, try to load configuration from nearest file\n        self.config = config or ServerConfig.find_and_load_config()\n        self.analyzer = AstAnalyzer()\n        self.mcp = FastMCP(\"AstGrepCodeAnalyzer\")\n        self.logger = self._setup_logger()\n        \n        # Initialize ignore handler\n        self.ignore_handler = self._setup_ignore_handler()\n        \n        # Set cache size from config if available\n        if hasattr(self.config, 'cache_size') and self.config.cache_size is not None:\n            result_cache.maxsize = self.config.cache_size\n            self.logger.info(\"Setting result cache size to \" + str(result_cache.maxsize))\n        \n        # Log security configuration\n        if self.config.safe_roots:\n            self.logger.info(\"File access restricted to: \" + ', '.join(self.config.safe_roots))\n        else:\n            self.logger.warning(\"No safe roots configured. File access is unrestricted.\")\n        \n        # Register all tools\n        self._register_tools()"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/result_cache.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 23,
+    "column": 5,
+    "text": "def __init__(self, maxsize: int = 128):\n        \"\"\"\n        Initialize the cache.\n        \n        Args:\n            maxsize: Maximum number of items to store in the cache (default: 128)\n        \"\"\"\n        self.maxsize = maxsize\n        self._cache_hits = 0\n        self._cache_misses = 0\n        self._cache_size = 0\n        self.logger = logging.getLogger(\"ast_grep_mcp.cache\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/result_cache.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 76,
+    "column": 9,
+    "text": "def wrapper(*args, **kwargs):\n            start_time = time.time()\n            \n            # Get cache info before call\n            info_before = cached_func.cache_info()\n            \n            # Call the cached function\n            result = cached_func(*args, **kwargs)\n            \n            # Get cache info after call\n            info_after = cached_func.cache_info()\n            \n            # Update stats\n            if info_after.hits > info_before.hits:\n                self._cache_hits += 1\n                self.logger.debug(f\"Cache hit for {func.__name__}\")\n            else:\n                self._cache_misses += 1\n                self.logger.debug(f\"Cache miss for {func.__name__}\")\n            \n            self._cache_size = info_after.currsize\n            \n            # Log performance improvement if cache hit\n            if info_after.hits > info_before.hits:\n                self.logger.debug(f\"Cache hit saved {time.time() - start_time:.4f}s\")\n            \n            return result"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/security.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 40,
+    "column": 5,
+    "text": "def save_template(match):\n        nonlocal template_count\n        placeholder = f\"__TEMPLATE_{template_count}__\"\n        template_placeholders[placeholder] = match.group(0)\n        template_count += 1\n        return placeholder"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/ignore_handler.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 18,
+    "column": 5,
+    "text": "def __init__(self, pattern: str, base_dir: Optional[Path] = None):\n        \"\"\"\n        Initialize an ignore pattern.\n        \n        Args:\n            pattern: The ignore pattern string\n            base_dir: The base directory for relative patterns\n        \"\"\"\n        self.original_pattern = pattern.strip()\n        self.negate = pattern.startswith('!')\n        self.pattern = pattern[1:].strip() if self.negate else pattern.strip()\n        self.base_dir = base_dir\n        \n        # Skip empty patterns and comments\n        if not self.pattern or self.pattern.startswith('#'):\n            self._is_valid = False\n            return\n        \n        self._is_valid = True\n        self._compile_pattern()"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/ignore_handler.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 39,
+    "column": 5,
+    "text": "def _compile_pattern(self):\n        \"\"\"\n        Compile the ignore pattern into a regex pattern.\n        \"\"\"\n        if not self._is_valid:\n            return\n        \n        pattern = self.pattern\n        \n        # Handle directory-specific pattern\n        self.dir_only = pattern.endswith('/')\n        if self.dir_only:\n            pattern = pattern[:-1]\n        \n        # Escape special regex characters, but not * or ?\n        pattern = re.escape(pattern).replace('\\\\*', '*').replace('\\\\?', '?')\n        \n        # Convert glob patterns to regex patterns\n        pattern = pattern.replace('*', '.*')\n        pattern = pattern.replace('?', '.')\n        \n        # Anchor the pattern based on whether it starts with /\n        if pattern.startswith('/'):\n            pattern = f\"^{pattern[1:]}\"\n        else:\n            pattern = f\"(^|/){pattern}\"\n        \n        # For directory patterns, we need to match all files/dirs inside too\n        if self.dir_only:\n            pattern = f\"{pattern}(/.*)?\"\n        \n        # Compile the regex\n        self._regex = re.compile(pattern)"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/ignore_handler.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 128,
+    "column": 5,
+    "text": "def __init__(self, base_dir: Optional[str] = None):\n        \"\"\"\n        Initialize the ignore handler.\n        \n        Args:\n            base_dir: The base directory for relative patterns\n        \"\"\"\n        self.base_dir = Path(base_dir) if base_dir else None\n        self.patterns: List[IgnorePattern] = []\n        self.loaded_files: Set[str] = set()"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/benchmarks.py",
+    "pattern_name": "long_function",
+    "pattern": "def $NAME($$$PARAMS):\n    $$$LONG_BODY",
+    "category": "anti-pattern",
+    "line": 23,
+    "column": 5,
+    "text": "def __init__(self, name: str, iterations: int = 5):\n        \"\"\"\n        Initialize a benchmark.\n        \n        Args:\n            name: Benchmark name\n            iterations: Number of iterations to run\n        \"\"\"\n        self.name = name\n        self.iterations = iterations\n        self.results: Dict[str, List[float]] = {}"
+  },
+  {
+    "file": "src/ast_grep_mcp/ast_analyzer.py",
+    "pattern_name": "list_in_loop",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)",
+    "category": "performance",
+    "line": 58,
+    "column": 13,
+    "text": "for match in matches:\n                match_text = match.text()\n                match_range = match.range()\n                \n                # Create a result object with detailed information\n                result = {\n                    \"text\": match_text,\n                    \"location\": {\n                        \"start\": {\n                            \"line\": match_range.start.line,\n                            \"column\": match_range.start.column\n                        },\n                        \"end\": {\n                            \"line\": match_range.end.line,\n                            \"column\": match_range.end.column\n                        }\n                    }\n                }\n                \n                results.append(result)\n                \n                # Log the first few matches for debugging\n                if len(results) <= 3:\n                    self.logger.debug(f\"Match {len(results)}: {match_text[:50]}\" + (\"...\" if len(match_text) > 50 else \"\"))"
+  },
+  {
+    "file": "src/ast_grep_mcp/ast_analyzer.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 58,
+    "column": 13,
+    "text": "for match in matches:\n                match_text = match.text()\n                match_range = match.range()\n                \n                # Create a result object with detailed information\n                result = {\n                    \"text\": match_text,\n                    \"location\": {\n                        \"start\": {\n                            \"line\": match_range.start.line,\n                            \"column\": match_range.start.column\n                        },\n                        \"end\": {\n                            \"line\": match_range.end.line,\n                            \"column\": match_range.end.column\n                        }\n                    }\n                }\n                \n                results.append(result)\n                \n                # Log the first few matches for debugging\n                if len(results) <= 3:\n                    self.logger.debug(f\"Match {len(results)}: {match_text[:50]}\" + (\"...\" if len(match_text) > 50 else \"\"))"
+  },
+  {
+    "file": "src/ast_grep_mcp/core/config.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 533,
+    "column": 9,
+    "text": "for handler in logger.handlers[:]:\n            logger.removeHandler(handler)"
+  },
+  {
+    "file": "src/ast_grep_mcp/core/ast_grep_mcp.py",
+    "pattern_name": "list_in_loop",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)",
+    "category": "performance",
+    "line": 477,
+    "column": 9,
+    "text": "for match in sorted_matches:\n            start_line = match['location']['start']['line']\n            end_line = match['location']['end']['line']\n            \n            # Get context lines\n            context_before = max(0, start_line - self.config.output_config.context_lines)\n            context_after = min(len(lines), end_line + self.config.output_config.context_lines)\n            \n            # Create a preview entry\n            preview_entry = {\n                \"match\": match,\n                \"context\": {\n                    \"before\": lines[context_before:start_line],\n                    \"match\": lines[start_line:end_line],\n                    \"after\": lines[end_line:context_after]\n                },\n                \"replacement\": safe_replacement\n            }\n            \n            preview.append(preview_entry)"
+  },
+  {
+    "file": "src/ast_grep_mcp/core/ast_grep_mcp.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 72,
+    "column": 9,
+    "text": "for pattern in self.config.ignore_patterns:\n            ignore_handler.add_pattern(pattern)"
+  },
+  {
+    "file": "src/ast_grep_mcp/core/ast_grep_mcp.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 477,
+    "column": 9,
+    "text": "for match in sorted_matches:\n            start_line = match['location']['start']['line']\n            end_line = match['location']['end']['line']\n            \n            # Get context lines\n            context_before = max(0, start_line - self.config.output_config.context_lines)\n            context_after = min(len(lines), end_line + self.config.output_config.context_lines)\n            \n            # Create a preview entry\n            preview_entry = {\n                \"match\": match,\n                \"context\": {\n                    \"before\": lines[context_before:start_line],\n                    \"match\": lines[start_line:end_line],\n                    \"after\": lines[end_line:context_after]\n                },\n                \"replacement\": safe_replacement\n            }\n            \n            preview.append(preview_entry)"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/ignore_handler.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 226,
+    "column": 9,
+    "text": "for pattern in default_patterns:\n            self.add_pattern(pattern)"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/pattern_suggestions.py",
+    "pattern_name": "list_in_loop",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)",
+    "category": "performance",
+    "line": 235,
+    "column": 9,
+    "text": "for i, variant in enumerate(suggestions[\"variants\"][:3], 1):\n            message.append(f\"  {i}. {variant}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/pattern_suggestions.py",
+    "pattern_name": "list_in_loop",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)",
+    "category": "performance",
+    "line": 240,
+    "column": 9,
+    "text": "for i, pattern_desc in enumerate(suggestions[\"similar_patterns\"][:3], 1):\n            message.append(f\"  {i}. {pattern_desc}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/pattern_suggestions.py",
+    "pattern_name": "list_in_loop",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)",
+    "category": "performance",
+    "line": 245,
+    "column": 9,
+    "text": "for i, example in enumerate(suggestions[\"examples\"][:3], 1):\n            message.append(f\"  {i}. {example}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/pattern_suggestions.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 235,
+    "column": 9,
+    "text": "for i, variant in enumerate(suggestions[\"variants\"][:3], 1):\n            message.append(f\"  {i}. {variant}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/pattern_suggestions.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 240,
+    "column": 9,
+    "text": "for i, pattern_desc in enumerate(suggestions[\"similar_patterns\"][:3], 1):\n            message.append(f\"  {i}. {pattern_desc}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/pattern_suggestions.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 245,
+    "column": 9,
+    "text": "for i, example in enumerate(suggestions[\"examples\"][:3], 1):\n            message.append(f\"  {i}. {example}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/pattern_suggestions.py",
+    "pattern_name": "unnecessary_list",
+    "pattern": "list($GENERATOR)",
+    "category": "performance",
+    "line": 33,
+    "column": 19,
+    "text": "list(var_pattern.finditer(pattern))"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/pattern_suggestions.py",
+    "pattern_name": "unnecessary_list",
+    "pattern": "list($GENERATOR)",
+    "category": "performance",
+    "line": 204,
+    "column": 20,
+    "text": "list(handler.get_default_patterns().items())"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/pattern_helpers.py",
+    "pattern_name": "unnecessary_list",
+    "pattern": "list($GENERATOR)",
+    "category": "performance",
+    "line": 269,
+    "column": 20,
+    "text": "list(patterns.items())"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/pattern_helpers.py",
+    "pattern_name": "unnecessary_list",
+    "pattern": "list($GENERATOR)",
+    "category": "performance",
+    "line": 269,
+    "column": 73,
+    "text": "list(patterns.items())"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/config_generator.py",
+    "pattern_name": "list_in_loop",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)",
+    "category": "performance",
+    "line": 121,
+    "column": 5,
+    "text": "for root in config_dict['safe_roots']:\n        lines.append(f\"  - {root}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/config_generator.py",
+    "pattern_name": "list_in_loop",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)",
+    "category": "performance",
+    "line": 136,
+    "column": 5,
+    "text": "for pattern in config_dict['ignore_patterns']:\n        lines.append(f\"  - {pattern}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/config_generator.py",
+    "pattern_name": "list_in_loop",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)",
+    "category": "performance",
+    "line": 151,
+    "column": 9,
+    "text": "for lang, template_dir in pattern_config['language_templates'].items():\n            lines.append(f\"    {lang}: {template_dir}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/config_generator.py",
+    "pattern_name": "list_in_loop",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)",
+    "category": "performance",
+    "line": 160,
+    "column": 9,
+    "text": "for lang, patterns in pattern_config['custom_patterns'].items():\n            lines.append(f\"    {lang}:\")\n            for name, pattern in patterns.items():\n                lines.append(f\"      {name}: '{pattern}'\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/config_generator.py",
+    "pattern_name": "list_in_loop",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)",
+    "category": "performance",
+    "line": 162,
+    "column": 13,
+    "text": "for name, pattern in patterns.items():\n                lines.append(f\"      {name}: '{pattern}'\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/config_generator.py",
+    "pattern_name": "list_in_loop",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $LIST.append($ITEM)",
+    "category": "performance",
+    "line": 222,
+    "column": 9,
+    "text": "for name, value in config_dict['options'].items():\n            lines.append(f\"  {name}: {value}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/config_generator.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 121,
+    "column": 5,
+    "text": "for root in config_dict['safe_roots']:\n        lines.append(f\"  - {root}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/config_generator.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 136,
+    "column": 5,
+    "text": "for pattern in config_dict['ignore_patterns']:\n        lines.append(f\"  - {pattern}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/config_generator.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 151,
+    "column": 9,
+    "text": "for lang, template_dir in pattern_config['language_templates'].items():\n            lines.append(f\"    {lang}: {template_dir}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/config_generator.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 160,
+    "column": 9,
+    "text": "for lang, patterns in pattern_config['custom_patterns'].items():\n            lines.append(f\"    {lang}:\")\n            for name, pattern in patterns.items():\n                lines.append(f\"      {name}: '{pattern}'\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/config_generator.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 162,
+    "column": 13,
+    "text": "for name, pattern in patterns.items():\n                lines.append(f\"      {name}: '{pattern}'\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/config_generator.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 222,
+    "column": 9,
+    "text": "for name, value in config_dict['options'].items():\n            lines.append(f\"  {name}: {value}\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/benchmarks.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 67,
+    "column": 9,
+    "text": "for i in range(self.iterations):\n            logger.info(f\"Running {label} - iteration {i+1}/{self.iterations}\")\n            elapsed, result = self.measure(func, *args, **kwargs)\n            times.append(elapsed)\n            results.append(result)\n            logger.info(f\"{label} - iteration {i+1}: {elapsed:.4f}s\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/benchmarks.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 139,
+    "column": 9,
+    "text": "for label, stats in self.get_stats().items():\n            logger.info(f\"{label}:\")\n            logger.info(f\"  Min: {stats['min']:.4f}s\")\n            logger.info(f\"  Max: {stats['max']:.4f}s\")\n            logger.info(f\"  Mean: {stats['mean']:.4f}s\")\n            logger.info(f\"  Median: {stats['median']:.4f}s\")\n            logger.info(f\"  StdDev: {stats['stdev']:.4f}s\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/benchmarks.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 333,
+    "column": 5,
+    "text": "for pattern in patterns:\n        logger.info(f\"Testing pattern: {pattern}\")\n        \n        # Sequential search\n        benchmark.run_benchmark(\n            f\"Sequential search - {pattern}\",\n            analyzer.search_directory,\n            temp_dir,\n            pattern,\n            parallel=False\n        )"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/benchmarks.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 371,
+    "column": 5,
+    "text": "for pattern in patterns:\n        pattern_comparisons = {}\n        best_speedup = 0\n        best_config = None\n        \n        for batch_size in batch_sizes:\n            batch_label = f\"batch_size={batch_size}\" if batch_size else \"auto_batch\"\n            parallel_label = f\"Parallel search ({batch_label}) - {pattern}\"\n            \n            comparison = benchmark.compare(\n                f\"Sequential search - {pattern}\",\n                parallel_label\n            )\n            \n            pattern_comparisons[batch_label] = comparison\n            \n            # Track best configuration\n            if comparison.get(\"speedup_ratio\", 0) > best_speedup:\n                best_speedup = comparison[\"speedup_ratio\"]\n                best_config = batch_label\n        \n        comparisons[pattern] = pattern_comparisons\n        best_speedups[pattern] = {\n            \"config\": best_config,\n            \"speedup\": best_speedup\n        }\n        \n        # Log results for this pattern\n        logger.info(f\"Pattern: {pattern}\")\n        logger.info(f\"  Best configuration: {best_config} with {best_speedup:.2f}x speedup\")\n        \n        for batch_label, comparison in pattern_comparisons.items():\n            logger.info(f\"  {batch_label}: {comparison['speedup_ratio']:.2f}x speedup ({comparison['speedup_percentage']:.2f}%)\")"
+  },
+  {
+    "file": "src/ast_grep_mcp/utils/benchmarks.py",
+    "pattern_name": "repeated_calculation",
+    "pattern": "for $VAR in $ITER:\n    $$$BODY\n    $EXPENSIVE_FUNC($ARGS)",
+    "category": "performance",
+    "line": 402,
+    "column": 9,
+    "text": "for batch_label, comparison in pattern_comparisons.items():\n            logger.info(f\"  {batch_label}: {comparison['speedup_ratio']:.2f}x speedup ({comparison['speedup_percentage']:.2f}%)\")"
+  }
+]

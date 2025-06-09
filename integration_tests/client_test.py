@@ -10,6 +10,7 @@ import requests
 import json
 import sys
 
+
 def test_connection():
     """Test basic connection to the MCP server."""
     try:
@@ -18,7 +19,7 @@ def test_connection():
             data = response.json()
             print("Successfully connected to MCP server!")
             print(f"Available tools: {len(data['tools'])}")
-            for tool in data['tools']:
+            for tool in data["tools"]:
                 print(f"- {tool['name']}: {tool['description']}")
             return True
         else:
@@ -33,6 +34,7 @@ def test_connection():
         print(f"Error: {str(e)}")
         return False
 
+
 def test_analyze_code():
     """Test the analyze_code tool."""
     try:
@@ -41,15 +43,12 @@ def test_analyze_code():
             "arguments": {
                 "code": "def hello():\n    print('Hello, world!')",
                 "language": "python",
-                "pattern": "def $FUNC_NAME()"
-            }
+                "pattern": "def $FUNC_NAME()",
+            },
         }
-        
-        response = requests.post(
-            "http://localhost:8080/call_tool",
-            json=payload
-        )
-        
+
+        response = requests.post("http://localhost:8080/call_tool", json=payload)
+
         if response.status_code == 200:
             result = response.json()
             print("\nAnalyze code test:")
@@ -63,9 +62,10 @@ def test_analyze_code():
         print(f"Error: {str(e)}")
         return False
 
+
 if __name__ == "__main__":
     print("Testing MCP server connection...")
     if test_connection():
         test_analyze_code()
     else:
-        sys.exit(1) 
+        sys.exit(1)

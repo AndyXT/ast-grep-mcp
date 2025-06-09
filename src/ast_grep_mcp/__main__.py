@@ -18,6 +18,7 @@ spec = importlib.util.spec_from_file_location("main", main_path)
 main_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(main_module)
 
+
 def main_entry_point():
     """
     Entry point for the console script defined in pyproject.toml.
@@ -25,5 +26,6 @@ def main_entry_point():
     """
     return main_module.main()
 
+
 if __name__ == "__main__":
-    main_module.main() 
+    main_module.main()
